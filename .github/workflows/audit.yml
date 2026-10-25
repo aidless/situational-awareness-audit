@@ -1,0 +1,75 @@
+name: audit
+
+# 三条检查，任意一条变红就说明有人动过不该动的东西。
+#
+# 1. validate   —— 断言表结构完整性 + 24 条阈值齐全
+# 2. verify     —— 封存一致性：claims.yaml 的 sha256 是否仍等于 seal.json 里记的值
+#                  这一条是本 workflow 的核心。它变红 = 有人在封存后改了断言表，
+#                  而按纪律这必须走「明示修正 + 归档 + 重封存」的流程，
+#                  不能是悄悄改完直接推。
+# 3. c10 self-test —— C10 判定器的规则自测（判定带边界 / 唯一分母 / synthetic 闸门）
+#
+# 全部三条都不需要原文 PDF（本仓库不含原文），也不装任何非标准库依赖
+# 除了 pyyaml。所以 CI 在干净环境里必然跑得通 —— 这一点很重要：
+# 一个需要原文才能绿的 CI 是没用的 CI。
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/**'
+      - 'audit.py'
+      - 'c10/**'
+      - '.github/workflows/audit.yml'
+  pull_request:
+    paths:
+      - 'data/**'
+      - 'audit.py'
+      - 'c10/**'
+      - '.github/workflows/audit.yml'
+  schedule:
+    # 每周一 09:00 UTC 主动巡检一次封存是否漂移。
+    # 不依赖有人推送 —— 封存被外部 PR 改掉时，schedule 也会抓到。
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: 安装依赖
+        run: pip install pyyaml
+
+      - name: ① 结构校验
+        run: python audit.py validate
+
+      - name: ② 封存一致性（核心）
+        run: |
+          python audit.py verify
+          # verify 的退出码即门禁；这里再显式打印一次当前哈希便于人工比对
+          python - <<'PY'
+          import hashlib, json, pathlib
+          h = hashlib.sha256(pathlib.Path("data/claims.yaml").read_bytes()).hexdigest()
+          s = json.loads(pathlib.Path("data/seal.json").read_text())
+          print(f"实际  claims_sha256 = {h}")
+          print(f"封存  claims_sha256 = {s['claims_sha256']}")
+          print(f"封存时间 {s['sealed_at']}  断言数 {s['claim_count']}")
+          assert h == s["claims_sha256"], "封存不一致：断言表在封存后被修改"
+          print("封存一致性: PASS")
+          PY
+
+      - name: ③ C10 判定器自测
+        run: python c10/scripts/analyze.py --self-test
+
+      - name: ④ 语法检查（含依赖 tiktoken 的脚本）
+        run: python -m py_compile audit.py c10/scripts/*.py

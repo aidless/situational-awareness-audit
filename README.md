@@ -1,5 +1,7 @@
 # Situational Awareness 断言审计
 
+[![audit](https://github.com/aidless/situational-awareness-audit/actions/workflows/audit.yml/badge.svg)](https://github.com/aidless/situational-awareness-audit/actions/workflows/audit.yml)
+
 把 Leopold Aschenbrenner《Situational Awareness: The Decade Ahead》（2024-06-06 版，165 页）里的预测主张，拆成 **24 条可证伪的独立断言**，逐条锁定判定阈值，封存后等时间检验。
 
 **这不是一篇预测。这是一次审计。** 区别在于：预测说"我认为会怎样"，审计说"你说了什么、我拿什么核、核不上怎么记"。
@@ -73,6 +75,17 @@ python audit.py score        # 输出校准报告
 ```
 
 依赖：`pyyaml`。评分与统计另需 `numpy`、`tiktoken`（C10 折算系数实测用）。
+
+## CI
+
+每条涉及 `data/` 的推送与 PR 都会跑 `.github/workflows/audit.yml`，另外每周一 09:00 UTC 主动巡检一次。四条检查：
+
+1. **结构校验** —— 24 条断言字段齐全、阈值格式合法
+2. **封存一致性** —— `claims.yaml` 的 sha256 是否仍等于 `seal.json` 里记的值。**这是 CI 的核心**：它变红意味着有人在封存后改了断言表，而按纪律这必须走「明示修正 + 归档 + 重封存」，不能是悄悄改完直接推
+3. **C10 判定器自测** —— 判定带边界、唯一分母口径、synthetic 硬闸门
+4. **语法检查** —— 含依赖 `tiktoken` 的脚本
+
+四条都不需要原文 PDF（本仓库不含原文），也不装 pyyaml 以外的依赖。这是刻意的：**一个需要原文才能变绿的 CI 是没用的 CI。**
 
 ## C10 实证包
 
