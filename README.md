@@ -74,7 +74,7 @@ python audit.py verify       # 封存一致性
 python audit.py score        # 输出校准报告
 ```
 
-依赖：`pyyaml`。评分与统计另需 `numpy`、`tiktoken`（C10 折算系数实测用）。
+依赖：`pyyaml`（`requirements.txt`）。C10 实证包的完整功能另需 `tiktoken`、`faster-whisper`、`piper-tts`，见 `c10/requirements.txt` —— 这些不进 CI，因为四条检查都不需要它们。
 
 ## CI
 
@@ -85,7 +85,9 @@ python audit.py score        # 输出校准报告
 3. **C10 判定器自测** —— 判定带边界、唯一分母口径、synthetic 硬闸门
 4. **语法检查** —— 含依赖 `tiktoken` 的脚本
 
-四条都不需要原文 PDF（本仓库不含原文），也不装 pyyaml 以外的依赖。这是刻意的：**一个需要原文才能变绿的 CI 是没用的 CI。**
+四条都不需要原文 PDF（本仓库不含原文），除 pyyaml 外零依赖。这是刻意的：**一个需要原文才能变绿的 CI 是没用的 CI。**
+
+依赖分两个文件：`requirements.txt` 只放 CI 真正用到的 `pyyaml`，`c10/requirements.txt` 放 C10 全功能所需的 `tiktoken` / `faster-whisper` / `piper-tts`。分开是为了让 CI 保持轻量 —— 每次推送不必为了四条不碰 tokenizer 的检查去装一整套推理依赖。
 
 ## C10 实证包
 

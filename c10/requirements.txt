@@ -1,0 +1,12 @@
+# C10 实证包的可选依赖 —— CI 不需要，只有真的跑折算系数实测或转写校准时才装。
+#
+#   pip install -r requirements.txt        # 核心(CI 用)
+#   pip install -r c10/requirements.txt    # 本文件，C10 全功能
+#
+# 注意：faster-whisper 首次运行会下载模型，国内网络需先设
+#   export HF_HUB_DISABLE_XET=1 HF_ENDPOINT=https://hf-mirror.com
+# 否则 xet 的 CAS 会报 401。
+
+tiktoken>=0.7        # o200k_base 折算系数实测(token_coef.py / probe.py)
+faster-whisper>=1.0  # ASR 转写校准(calibrate_asr.py)，仅校准用，采集不依赖
+piper-tts>=1.0       # 合成校准音频用；无它也可用任何 TTS 或真人朗读

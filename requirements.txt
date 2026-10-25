@@ -1,0 +1,9 @@
+# 核心依赖 —— CI 也只需要这些。
+#
+# 只放真正被 validate / verify / score / brief 用到的包。
+# 装得快，缓存命中率高，且不含可选依赖。
+#
+# C10 实证包的完整功能（token 折算系数实测、ASR 转写校准）另需
+# tiktoken 与 faster-whisper，见 c10/requirements.txt —— 那些不进 CI，
+# 因为 CI 的四条检查都不需要它们。
+pyyaml>=6.0
