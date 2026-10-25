@@ -90,7 +90,7 @@ python interrater/selftest_pipeline.py                            # 判别力自
 
 ## CI
 
-每条涉及 `data/`、`deadlines.py`、`interrater/` 的推送与 PR 都会跑 `.github/workflows/audit.yml`，另外每周一 09:00 UTC 主动巡检一次。九条检查：
+每条涉及 `data/`、`deadlines.py`、`interrater/` 的推送与 PR 都会跑 `.github/workflows/audit.yml`，另外每周一 09:00 UTC 主动巡检一次。十条检查：
 
 1. **结构校验** —— 24 条断言字段齐全、阈值格式合法
 2. **封存一致性** —— `claims.yaml` 的 sha256 是否仍等于 `seal.json` 里记的值。**这是 CI 的核心**：它变红意味着有人在封存后改了断言表，而按纪律这必须走「明示修正 + 归档 + 重封存」，不能是悄悄改完直接推
@@ -101,8 +101,9 @@ python interrater/selftest_pipeline.py                            # 判别力自
 7. **判定包生成** —— 按固定 seed 出包，验证盲化与泄漏扫描仍有效
 8. **判别力自测** —— 用合成判定者验证流程能显示出预注册预期的分化（若连已知强弱的分化都显示不出，真实数据也无法解读）
 9. **语法检查** —— 全部脚本可编译
+10. **静态检查** —— `ruff` 查未定义名 / 重复定义 / 冗余导入。加这条的直接动因是一次真实事故：`calibrate_asr.py` 用了 `os.environ` 却没 `import os`，`py_compile` 通过、CI 全绿，函数一调就 `NameError`。**编译级检查抓不到名字解析错误**，只有静态分析能
 
-九条都不需要原文 PDF（本仓库不含原文），除 pyyaml 外零依赖。这是刻意的：**一个需要原文才能变绿的 CI 是没用的 CI。**
+前九条都不需要原文 PDF（本仓库不含原文），除 pyyaml 外零依赖；第十条只多装一个 ruff。这是刻意的：**一个需要原文才能变绿的 CI 是没用的 CI。**
 
 依赖分两个文件：`requirements.txt` 只放 CI 真正用到的 `pyyaml`，`c10/requirements.txt` 放 C10 全功能所需的 `tiktoken` / `faster-whisper` / `piper-tts`。分开是为了让 CI 保持轻量。
 

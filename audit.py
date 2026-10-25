@@ -18,7 +18,7 @@ import json
 import re
 import sys
 from collections import Counter, defaultdict
-from datetime import date, datetime
+from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent

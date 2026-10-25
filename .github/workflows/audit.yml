@@ -1,6 +1,6 @@
 name: audit
 
-# 九条检查，任意一条变红都说明有人动过不该动的东西。
+# 十条检查，任意一条变红都说明有人动过不该动的东西。
 #
 # 1. validate      —— 断言表结构完整性 + 24 条阈值齐全
 # 2. verify        —— 封存一致性：claims.yaml 的 sha256 是否仍等于 seal.json 里记的值
@@ -15,8 +15,12 @@ name: audit
 # 7. 判定包生成    —— 按固定 seed 出包，验证盲化与泄漏扫描仍有效
 # 8. 判别力自测    —— 用合成判定者验证这套流程能显示出预注册预期的分化
 # 9. 语法检查      —— 全部脚本可编译
+# 10. 静态检查     —— ruff 查未定义名。加这条的直接动因：calibrate_asr.py 用了
+#                     os.environ 却没 import os，py_compile 通过、CI 全绿，
+#                     函数一调就 NameError。编译级检查抓不到名字解析错误。
 #
-# 全部九条都不需要原文 PDF（仓库不含原文），除 pyyaml 外不装任何依赖。
+# 前九条都不需要原文 PDF（仓库不含原文），除 pyyaml 外不装依赖；第 10 条只多装
+# 一个 ruff（静态分析器，无运行时耦合）。
 # 一个需要原文才能变绿的 CI 是没用的 CI。
 
 on:
@@ -102,3 +106,12 @@ jobs:
 
       - name: ⑨ 语法检查
         run: python -m py_compile audit.py deadlines.py interrater/*.py c10/scripts/*.py
+
+      - name: ⑩ 静态检查（未定义名 / 重复定义 / 冗余导入）
+        # 加这一条的理由是具体的一次事故：calibrate_asr.py 用了 os.environ 却没
+        # import os，py_compile 通过、CI 全绿，但函数一调就 NameError。
+        # 编译级检查抓不到名字解析错误 —— 只有静态分析能。
+        run: |
+          pip install ruff
+          ruff check --select F821,F811,F401 --output-format concise \
+            audit.py deadlines.py interrater/ c10/scripts/
