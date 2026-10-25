@@ -1,0 +1,57 @@
+{
+  "quarter": "2026Q4",
+  "scored_at": "2026-10-24",
+  "scorer": "liuzewen",
+  "basis": "依据 data/claims.yaml 中已锁定的 resolution_protocol 机械判定，不做事后解释",
+  "scores": [
+    {
+      "id": "C19",
+      "verdict": "miss",
+      "confidence": "high",
+      "observed": "四家适用主体中最高官方 AI run rate 为 Microsoft 的 370 亿美元（FY26 Q3，2026-04-29 发布，同比 +123%），距 1000 亿美元阈值差约 63%",
+      "evidence": [
+        "Microsoft FY26 Q3 财报新闻稿（2026-04-29）：AI 业务年化收入运行率超 370 亿美元",
+        "Microsoft FY26 Q4 财报（2026-07-29）：未更新 AI run rate，仅报告 Azure 年收入破 1000 亿",
+        "Amazon Q2 2026 财报电话会：AWS AI 业务与自研芯片业务各超 250 亿美元年化",
+        "Alphabet / Meta：未单独披露 AI 收入科目"
+      ],
+      "excluded_evidence": [
+        "Azure 整体年收入破 1000 亿 —— 依规则 R2，云总收入含大量非 AI 负载，不可单独作为达标证据",
+        "OpenAI 约 500 亿 / Anthropic 约 650 亿 —— 依规则 R1，非 SEC 口径的媒体/投资人交底数字，仅记旁证",
+        "Meta 广告增收的 AI 归因 —— 依规则 R2，无法分离 AI 贡献"
+      ],
+      "window_open": true,
+      "window_note": "判定窗口至 2026-12-31。当前为窗口内 mid-term 判定，非终判。若年底前出现新的官方披露达 1000 亿，需改判并在 report 中说明是哪家主体、哪份文件、哪一句。",
+      "subsidiary_finding": "作者推论链隐含假设「AI 收入会成为财报上可单独计量的科目」。2026 年现实是四家中仅两家披露且口径不可互比 —— AI 收入的可计量性落后于 AI 收入本身。此发现可独立成文。"
+    },
+    {
+      "id": "C15",
+      "verdict": "partial",
+      "confidence": "medium",
+      "observed": "截至 2026-10-24，无任何系统在 8 小时预算下追平人类专家基线。RE-Bench v1 已公开结论为：2 小时预算代理达人类 4 倍，8 小时人类略胜，32 小时人类达代理 2 倍",
+      "evidence": [
+        "RE-Bench v1（Wijk et al., METR）：7 个 ML 研究工程环境，61 名专家 71 次 8 小时尝试",
+        "RE-Bench 定性发现：代理提交方案速度超人类 10 倍以上、成本约 123 美元 vs 1855 美元，但多数方案得分接近 0",
+        "METR TH 1.1（截至 2026-09-08）：前沿模型 50% 时间视野进入 4-16 小时区间（旁证 P3，不参与判定）"
+      ],
+      "excluded_evidence": [
+        "「代理提交方案快 10 倍」—— 依锁定规则第 4 条，速度不等于质量",
+        "METR 时间视野 —— 依锁定规则，TH 只检验连续工作能力，不检验开放式研究能力",
+        "实验室自述研究加速、无人类基线的自我报告"
+      ],
+      "partial_credit": 0.5,
+      "partial_reason": "T1 未满足（8 小时未追平），但 2 小时预算下代理达人类 4 倍，属锁定规则中的 partial 档。按规则 partial 不计作 hit，但保留 0.5 分以反映「短时任务已明显超越」这一事实。",
+      "window_open": true,
+      "window_note": "判定窗口至 2027-06-30。当前为首次观测，非终判。",
+      "author_charity_note": "作者原文明确说「2026/27 模型速度是原型，还要一到两年才完全自动化」。故本条判 miss 不构成对作者时间表的否定 —— 它检验的是原型阶段是否已在 2026 年内以可验证形式出现。"
+    }
+  ],
+  "summary": {
+    "scored": 2,
+    "hit": 0,
+    "partial": 1,
+    "miss": 1,
+    "ambiguous": 0,
+    "note": "两条均为窗口内 mid-term 判定，非终判。C19 距阈值 63%，即使年底有新披露也需单季跳升约 2.7 倍；C15 已具备 2 小时档的明显超越，8 小时档仍落后人类。"
+  }
+}

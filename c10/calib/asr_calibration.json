@@ -1,0 +1,14 @@
+{
+  "truth_units": 82,
+  "hyp_units": 79,
+  "retention": 0.9634,
+  "truth_fillers": 3,
+  "hyp_fillers": 0,
+  "filler_retention": 0.0,
+  "char_similarity": 0.7143,
+  "seconds": 16.46,
+  "model": "tiny",
+  "lang": "zh",
+  "verdict": "UNUSABLE",
+  "reason": "填充词保留 0% < 80%（C10 只关心这部分）；字符相似度 71.4% < 95%"
+}

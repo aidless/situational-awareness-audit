@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Situational Awareness · 前瞻性断言检查点表</title>
+<style>
+:root{
+  --bg:#0d1117; --panel:#151b23; --panel2:#1b232d; --line:#2a3441;
+  --fg:#e6edf3; --fg2:#9aa7b5; --fg3:#6b7785;
+  --blue:#58a6ff; --teal:#3fb6a8; --amber:#d29922; --red:#f85149; --purple:#a371f7;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,"SF Pro Text","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.65;font-size:14px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:48px 28px 80px}
+header{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:36px}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--fg3);margin-bottom:14px}
+h1{font-size:29px;font-weight:600;letter-spacing:-.02em;line-height:1.3}
+.sub{color:var(--fg2);margin-top:12px;font-size:14px;max-width:820px}
+.meta-row{display:flex;gap:26px;flex-wrap:wrap;margin-top:22px;font-size:12.5px;color:var(--fg3)}
+.meta-row b{color:var(--fg2);font-weight:500}
+h2{font-size:19px;font-weight:600;margin:52px 0 8px;letter-spacing:-.01em}
+h2 .num{color:var(--fg3);font-weight:400;margin-right:10px;font-variant-numeric:tabular-nums}
+.lede{color:var(--fg2);margin-bottom:22px;max-width:860px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;margin:24px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.card .k{font-size:11.5px;color:var(--fg3);letter-spacing:.06em;text-transform:uppercase}
+.card .v{font-size:26px;font-weight:600;margin-top:6px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.card .n{font-size:12px;color:var(--fg2);margin-top:4px}
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13px}
+th{text-align:left;font-weight:500;color:var(--fg2);border-bottom:1px solid var(--line);padding:10px 10px;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+td{padding:11px 10px;border-bottom:1px solid #1f2731;vertical-align:top}
+tr:hover td{background:#131a22}
+.id{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:12px;color:var(--blue)}
+.pg{font-family:ui-monospace,monospace;font-size:12px;color:var(--fg3)}
+.tag{display:inline-block;font-size:11px;padding:1.5px 7px;border-radius:20px;border:1px solid;white-space:nowrap}
+.t-high{color:var(--teal);border-color:#1f5f58;background:#0e2b28}
+.t-med{color:var(--amber);border-color:#5c4415;background:#2a2210}
+.t-low{color:var(--fg3);border-color:#333d49;background:#181f27}
+.t-conv{color:var(--purple);border-color:#4b3a75;background:#1e1930}
+.t-quant{color:var(--blue);border-color:#21486e;background:#0f2133}
+.t-cap{color:var(--red);border-color:#6b2420;background:#2b1514}
+.q{color:var(--fg);font-size:12.5px;line-height:1.55}
+.q em{color:var(--fg2);font-style:normal}
+.note{background:var(--panel);border-left:2px solid var(--blue);border-radius:0 8px 8px 0;padding:16px 20px;margin:22px 0;color:var(--fg2);font-size:13px}
+.note strong{color:var(--fg);font-weight:500}
+.warn{border-left-color:var(--amber)}
+.crit{border-left-color:var(--red)}
+.bar-row{display:grid;grid-template-columns:150px 1fr 52px;gap:14px;align-items:center;margin:9px 0;font-size:12.5px}
+.bar-lbl{color:var(--fg2)}
+.bar-track{height:20px;background:var(--panel2);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;background:var(--blue);border-radius:4px}
+.bar-val{color:var(--fg2);text-align:right;font-variant-numeric:tabular-nums;font-family:ui-monospace,monospace;font-size:12px}
+code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:12.5px;background:var(--panel2);padding:2px 6px;border-radius:4px;color:var(--teal)}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px;overflow-x:auto;font-size:12.5px;line-height:1.6;margin:16px 0}
+pre code{background:none;padding:0;color:var(--fg2)}
+ul{margin:12px 0 12px 20px;color:var(--fg2)}
+li{margin:7px 0}
+li b{color:var(--fg);font-weight:500}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);color:var(--fg3);font-size:12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:800px){.two{grid-template-columns:1fr}.wrap{padding:32px 18px 60px}h1{font-size:23px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">前瞻性断言审计 · 预注册骨架</div>
+  <h1>Situational Awareness: The Decade Ahead<br>可核验断言清单与阈值锁定表</h1>
+  <p class="sub">对 Leopold Aschenbrenner 2024 年 6 月发布的 165 页长文做全量断言抽取，仅保留「有公开可观测量 + 有明确阈值或方向」的条目。本表为预注册设计：阈值尚未填写，填写后以 sha256 封存，此后不得修改。</p>
+  <div class="meta-row">
+    <span><b>原文</b> situational-awareness.ai · 165 页 · 2024-06-06</span>
+    <span><b>抽取日期</b> 2026-10-24</span>
+    <span><b>断言数</b> 24 条</span>
+    <span><b>首批评分</b> 2026Q4</span>
+    <span><b>状态</b> 已锁定 24 / 24 · 已封存</span>
+  </div>
+</header>
+
+<div class="cards">
+  <div class="card"><div class="k">断言总数</div><div class="v">24</div><div class="n">覆盖全部六个部分</div></div>
+  <div class="card"><div class="k">高可判定性</div><div class="v">7</div><div class="n">可直接机械比对</div></div>
+  <div class="card"><div class="k">折算率断言</div><div class="v">5</div><div class="n">全文最脆弱环节</div></div>
+  <div class="card"><div class="k">已锁定阈值</div><div class="v" style="color:var(--teal)">7</div><div class="n">C19 C15 C03 C16 C09 C10 C21</div></div>
+</div>
+
+<h2><span class="num">01</span>抽取原则</h2>
+<p class="lede">全文 165 页中规范性主张（美国必须领先、需要政府项目）与描述性主张混写。审计只收后者，且必须通过三重过滤。</p>
+<ul>
+  <li><b>有公开可观测量</b> —— 观测量必须来自第三方可独立获取的数据源，作者私人通信与「硅谷传闻」标注为 C/D 级，不作为主判据。</li>
+  <li><b>有阈值或方向</b> —— 「可能」「或许」类模糊限定词一律不收，除非作者在同一段给出了具体数量级或年份。</li>
+  <li><b>有明确到期日</b> —— 未给出时间的断言排除。仅 C24「本十年内建成超级智能」因是总括性结论而保留，但标注为不可操作化。</li>
+</ul>
+
+<div class="note warn">
+  <strong>关于 C24 的特殊处理。</strong>「本十年内建成超级智能」是全文的最终结论，但它没有公认的操作化定义。若把它计入校准分数，任何评分都必然演变为对定义的事后争论。因此本表收录它以保证完整性，但明确标注 <b>不计入校准分数</b>——这本身是一个值得在论文里展开的方法论问题：<b>总括性断言的不可证伪性，如何被用来保护其下游具体断言</b>。
+</div>
+
+<h2><span class="num">02</span>分布结构</h2>
+<p class="lede">24 条断言在类型、可判定性与到期年份上的分布，决定了这份审计到底能不能做成。</p>
+
+<div class="two">
+<div>
+  <p style="font-size:13px;color:var(--fg2);margin-bottom:14px">按类型分布</p>
+  <div class="bar-row"><span class="bar-lbl">量化趋势</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="bar-val">8</span></div>
+  <div class="bar-row"><span class="bar-lbl">能力里程碑</span><div class="bar-track"><div class="bar-fill" style="width:62.5%;background:var(--red)"></div></div><span class="bar-val">5</span></div>
+  <div class="bar-row"><span class="bar-lbl">折算率</span><div class="bar-track"><div class="bar-fill" style="width:62.5%;background:var(--purple)"></div></div><span class="bar-val">5</span></div>
+  <div class="bar-row"><span class="bar-lbl">结构性判断</span><div class="bar-track"><div class="bar-fill" style="width:37.5%;background:var(--teal)"></div></div><span class="bar-val">3</span></div>
+  <div class="bar-row"><span class="bar-lbl">其他</span><div class="bar-track"><div class="bar-fill" style="width:37.5%;background:var(--fg3)"></div></div><span class="bar-val">3</span></div>
+</div>
+<div>
+  <p style="font-size:13px;color:var(--fg2);margin-bottom:14px">按到期年份分布</p>
+  <div class="bar-row"><span class="bar-lbl">2026</span><div class="bar-track"><div class="bar-fill" style="width:7.7%;background:var(--amber)"></div></div><span class="bar-val">1</span></div>
+  <div class="bar-row"><span class="bar-lbl">2027</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--amber)"></div></div><span class="bar-val">13</span></div>
+  <div class="bar-row"><span class="bar-lbl">2028</span><div class="bar-track"><div class="bar-fill" style="width:53.8%;background:var(--amber)"></div></div><span class="bar-val">7</span></div>
+  <div class="bar-row"><span class="bar-lbl">2029</span><div class="bar-track"><div class="bar-fill" style="width:7.7%;background:var(--fg3)"></div></div><span class="bar-val">1</span></div>
+  <div class="bar-row"><span class="bar-lbl">2030</span><div class="bar-track"><div class="bar-fill" style="width:15.4%;background:var(--fg3)"></div></div><span class="bar-val">2</span></div>
+</div>
+</div>
+
+<div class="note">
+  <strong>结构判断：这是一份可以做成的审计。</strong>13 条断言在 2027 年到期，意味着 2028 年初就能出第一份具备统计意义的结算报告；7 条高可判定性断言中有 5 条集中在 2026 末至 2027 末，中间评分点充足。真正困难的是 5 条折算率断言——它们恰恰是全表学术价值最高、且目前没有人系统做过的部分。
+</div>
+
+<h2><span class="num">03</span>断言总表</h2>
+<p class="lede">S 列 = 原文部分，P 列 = PDF 物理页码，D 列 = 可判定性。紫色为折算率类断言。</p>
+
+<table>
+<thead><tr><th style="width:56px">ID</th><th style="width:34px">S</th><th style="width:44px">P</th><th style="width:88px">类型</th><th>原文主张（压缩）</th><th style="width:76px">到期</th><th style="width:56px">D</th></tr></thead>
+<tbody>
+<tr><td class="id">C01</td><td class="pg">I</td><td class="pg">8</td><td><span class="tag t-cap">里程碑</span></td><td class="q">2027 年前模型可承担 AI 研究员/工程师的工作 <em>（作者自定标准：能完全自动化其本人工作）</em></td><td class="pg">2027-12</td><td><span class="tag t-high">高</span></td></tr>
+<tr><td class="id">C02</td><td class="pg">I</td><td class="pg">9</td><td><span class="tag t-quant">趋势</span></td><td class="q">相对 GPT-4 再获约 10 万倍有效算力（+5 OOM，区间 3–6）</td><td class="pg">2027-12</td><td><span class="tag t-med">中</span></td></tr>
+<tr><td class="id">C03</td><td class="pg">I</td><td class="pg">21</td><td><span class="tag t-quant">趋势</span></td><td class="q">前沿训练算力长期约 0.5 OOM/年（约 3.16 倍/年）</td><td class="pg">2027-12</td><td><span class="tag t-high">高</span></td></tr>
+<tr><td class="id">C04</td><td class="pg">I</td><td class="pg">26</td><td><span class="tag t-quant">趋势</span></td><td class="q">算法效率 1–3 OOM，最佳猜测 2 OOM</td><td class="pg">2027-12</td><td><span class="tag t-med">中</span></td></tr>
+<tr><td class="id">C05</td><td class="pg">I</td><td class="pg">43</td><td><span class="tag t-quant">趋势</span></td><td class="q">本十年累计约 10 OOM，之后进入缓慢爬升</td><td class="pg">2030-12</td><td><span class="tag t-med">中</span></td></tr>
+<tr><td class="id">C06</td><td class="pg">I</td><td class="pg">30</td><td><span class="tag t-conv">折算率</span></td><td class="q">RLHF 带来的收益 ≈ 100 倍更大的模型 <em>（来源 A 级：InstructGPT）</em></td><td class="pg">2027-12</td><td><span class="tag t-low">低</span></td></tr>
+<tr><td class="id">C07</td><td class="pg">I</td><td class="pg">30</td><td><span class="tag t-conv">折算率</span></td><td class="q">CoT ≈ 10 倍有效算力 <em>（来源 C 级：作者判断）</em></td><td class="pg">2027-12</td><td><span class="tag t-med">中</span></td></tr>
+<tr><td class="id">C08</td><td class="pg">I</td><td class="pg">32</td><td><span class="tag t-conv">折算率</span></td><td class="q">脚手架/工具 ≈ 5–30 倍有效算力 <em>（来源 B 级：Epoch 综述）</em></td><td class="pg">2027-12</td><td><span class="tag t-med">中</span></td></tr>
+<tr><td class="id">C09</td><td class="pg">I</td><td class="pg">32</td><td><span class="tag t-cap">分解</span></td><td class="q">同一 GPT-4 基座经 unhobbling 从 5% → 20% → 近 40%（METR）</td><td class="pg">2027-12</td><td><span class="tag t-high">高</span></td></tr>
+<tr><td class="id">C10</td><td class="pg">I</td><td class="pg">35</td><td><span class="tag t-conv">折算率</span></td><td class="q">人类思维 ≈ 100 token/分钟；百万 token ≈ 数月工作量 <em>（来源 C 级：未经测量）</em></td><td class="pg">2027-12</td><td><span class="tag t-med">中</span></td></tr>
+<tr><td class="id">C11</td><td class="pg">I</td><td class="pg">37</td><td><span class="tag t-conv">折算率</span></td><td class="q">测试时算力 : 训练算力 ≈ 1.2 : 1 <em>（来源 B 级：Jones 2021 Hex 实验，跨域外推）</em></td><td class="pg">2027-12</td><td><span class="tag t-high">高</span></td></tr>
+<tr><td class="id">C12</td><td class="pg">II</td><td class="pg">50</td><td><span class="tag t-quant">趋势</span></td><td class="q">2027 年可运行约 1 亿研究员等价物</td><td class="pg">2027-12</td><td><span class="tag t-med">中</span></td></tr>
+<tr><td class="id">C13</td><td class="pg">II</td><td class="pg">47</td><td><span class="tag t-cap">里程碑</span></td><td class="q">自动化 AI 研究把十年算法进展压缩到 1 年内（再 +5 OOM）</td><td class="pg">2028-12</td><td><span class="tag t-low">低</span></td></tr>
+<tr><td class="id">C14</td><td class="pg">II</td><td class="pg">63</td><td><span class="tag t-cap">里程碑</span></td><td class="q">2027/28 自动化 &gt;90%；2028/29 进入超智能</td><td class="pg">2029-12</td><td><span class="tag t-low">低</span></td></tr>
+<tr><td class="id">C15</td><td class="pg">II</td><td class="pg">54</td><td><span class="tag t-cap">里程碑</span></td><td class="q">2026/27 出现「原型自动化研究员」</td><td class="pg">2027-06</td><td><span class="tag t-high">高</span></td></tr>
+<tr><td class="id">C16</td><td class="pg">IIIa</td><td class="pg">77</td><td><span class="tag t-quant">趋势</span></td><td class="q">2026 年约 1GW / 百万 H100 等效；2028 年约 10GW / 千万等效</td><td class="pg">2028-12</td><td><span class="tag t-high">高</span></td></tr>
+<tr><td class="id">C17</td><td class="pg">IIIa</td><td class="pg">80</td><td><span class="tag t-quant">趋势</span></td><td class="q">2028 年全球 AI 年投资约 2 万亿美元；占美国发电量 20%</td><td class="pg">2028-12</td><td><span class="tag t-med">中</span></td></tr>
+<tr><td class="id">C18</td><td class="pg">IIIa</td><td class="pg">77</td><td><span class="tag t-quant">结构</span></td><td class="q">电力（而非资本）是首要瓶颈：「去哪儿找 10GW？」</td><td class="pg">2028-12</td><td><span class="tag t-med">中</span></td></tr>
+<tr><td class="id">C19</td><td class="pg">IIIa</td><td class="pg">81</td><td><span class="tag t-quant">趋势</span></td><td class="q">2026 年中某大型科技公司 AI 收入 run rate 达 1000 亿美元</td><td class="pg">2026-12</td><td><span class="tag t-high">高</span></td></tr>
+<tr><td class="id">C20</td><td class="pg">IIIb</td><td class="pg">95</td><td><span class="tag t-quant">结构</span></td><td class="q">算法秘密价值 = 10–100 倍算力（对比出口管制仅值 3 倍）</td><td class="pg">2027-12</td><td><span class="tag t-low">低</span></td></tr>
+<tr><td class="id">C21</td><td class="pg">IIIc</td><td class="pg">109</td><td><span class="tag t-quant">结构</span></td><td class="q">RLHF 随能力上升必然失效；专家标注成本从数美元涨至约 100 美元/小时</td><td class="pg">2028-12</td><td><span class="tag t-med">中</span></td></tr>
+<tr><td class="id">C22</td><td class="pg">IIIc</td><td class="pg">120</td><td><span class="tag t-quant">方法</span></td><td class="q">CoT 可读性与忠实度可被简单测量并长期保持（作者称「被严重低估」）</td><td class="pg">2028-12</td><td><span class="tag t-med">中</span></td></tr>
+<tr><td class="id">C23</td><td class="pg">IV</td><td class="pg">145</td><td><span class="tag t-quant">制度</span></td><td class="q">2027/28 出现某种形式的政府 AGI 项目</td><td class="pg">2028-12</td><td><span class="tag t-med">中</span></td></tr>
+<tr><td class="id">C24</td><td class="pg">V</td><td class="pg">158</td><td><span class="tag t-cap">里程碑</span></td><td class="q">本十年结束前建成超级智能 <em>（无公认标准，不计入校准分数）</em></td><td class="pg">2030-12</td><td><span class="tag t-low">低</span></td></tr>
+</tbody>
+</table>
+
+<h2><span class="num">04</span>五条折算率：全表最值得做的部分</h2>
+<p class="lede">全文说服力来自一个动作——把异构的进展（上下文、脚手架、RLHF、思维链）折算成同一把尺子上的「有效算力 OOM」。这一步没有任何外部校验，而它恰好是一个可测量、可校准、且目前无人系统做过的问题。</p>
+
+<table>
+<thead><tr><th style="width:56px">ID</th><th>折算内容</th><th style="width:210px">来源与级别</th><th style="width:300px">为什么可疑</th></tr></thead>
+<tbody>
+<tr><td class="id">C06</td><td class="q">RLHF ≈ 100 倍算力</td><td class="pg">InstructGPT 人类偏好实验（A）</td><td class="q">证据本身扎实，但从 2022 年小模型外推到 2027 年前沿模型未经检验；随着模型能力提升，RLHF 的边际价值大概率递减。</td></tr>
+<tr><td class="id">C07</td><td class="q">CoT ≈ 10 倍算力</td><td class="pg">作者判断（C）</td><td class="q">若推理模型已内置长思维链，则「开启/关闭 CoT」的对照实验失去意义，折算率会被结构性稀释。</td></tr>
+<tr><td class="id">C08</td><td class="q">脚手架/工具 ≈ 5–30 倍</td><td class="pg">Epoch AI 综述（B）</td><td class="q">区间宽达 6 倍，且强依赖具体基线与脚手架配置。不锁定配置则完全不可复现。</td></tr>
+<tr><td class="id">C10</td><td class="q">人类 ≈ 100 token/分钟</td><td class="pg">作者估计（C）</td><td class="q"><b>这个数字从未被测量，却是「1 亿研究员等价物」全部推导的分母。</b>一个下午的实证即可检验。</td></tr>
+<tr><td class="id">C11</td><td class="q">测试时 : 训练算力 ≈ 1.2 : 1</td><td class="pg">Jones 2021，棋盘游戏（B）</td><td class="q">从 Hex 棋类外推到语言模型是明确的跨域跳跃。作者自己用「若类似关系成立」做了标记——这是全表最值得做原创测量的换算率。</td></tr>
+</tbody>
+</table>
+
+<div class="note crit">
+  <strong>这是最有价值的研究缺口。</strong>C10 与 C11 两条合计承担了「1 亿研究员等价物」整条链条的全部重量，而它们的来源级别分别是 C（作者估计）与 B（跨域外推）。若能拿出一套可复现的兑换率测量协议，得到的不只是一篇评测方法学论文，而是<b>对整个「有效算力」话语体系的校准工具</b>——这套话语目前被广泛用于定价、投资与政策论证，却没有人检验过它的单位换算。
+</div>
+
+<h2><span class="num">05</span>第二种检验：同一套判断的实盘下注</h2>
+<p class="lede">作者把文中判断直接转为可证伪的资本配置，因此提供了一个罕见的双重检验机会。但两类检验必须严格区分。</p>
+
+<table>
+<thead><tr><th style="width:120px">维度</th><th>认知判断（正文）</th><th>可实施性（实盘）</th></tr></thead>
+<tbody>
+<tr><td class="pg">检验对象</td><td class="q">方向对不对：算力/电力/存储是否成为瓶颈</td><td class="q">能不能穿越波动活到兑现</td></tr>
+<tr><td class="pg">2026 结果</td><td class="q">未被证伪。押注电力、存储、数据中心方向确实赚钱，至 6 月年内 +439%</td><td class="q"><b>已被证伪。</b>约 4 倍杠杆 + 高集中度，7 月单月 −67%，160 亿美元持仓折价约 10% 卖给 Citadel</td></tr>
+<tr><td class="pg">结论</td><td class="q">认知层面成立</td><td class="q">工程层面失败</td></tr>
+</tbody>
+</table>
+
+<div class="note warn">
+  <strong>必须做的方法论切分。</strong>不能因为爆仓就否定其判断，也不能因为判断对就淡化爆仓。这两件事在同一个人身上同时为真，恰好说明：<b>预测的正确性与预测的可实施性是两个独立的评价维度。</b>而在当前的 AI 预测文献里，几乎所有人的评估都只做了第一个维度。这本身就是一个可以立论的空白。
+</div>
+
+<h2><span class="num">06</span>阈值锁定：二十四条全定，已封存</h2>
+<p class="lede">锁定不是填个数字，而是把「什么算证据、什么不算」写死——这一步决定了整份审计是否可证伪。已锁的十五条分四层：<b>结果类</b>（C19 收入、C15 能力比）、<b>输入类</b>（C03 算力斜率、C04 算法效率、C16 集群功率、C09 后训练增益）、<b>承重墙类</b>（C10 人类思维速率、C21 监督成本）、以及本轮新增的<b>加总类</b>（C06 C07 C08 C11 四条折算率与它们的总账 C02，另有 C20 秘密价值与 C22 测量采纳两条结构断言）。</p>
+
+<div class="note crit">
+  <strong>为什么必须区分这三层。</strong>结果类断言错了，只说明作者的推论跳得太远；<b>输入类断言错了，整条论证的分母就是假的。</b>作者的全部结论建立在「三个通道各贡献若干 OOM」之上，而每个通道都依赖一个外部数字。C03 是物理算力通道的斜率，C16 是它的上限，C09 是 unhobbling 通道的证据。<br><br>
+  <b>承重墙类比前两层更隐蔽：它们不是「数字取错」，而是「数字不存在」。</b>C10 的 100 tokens/分钟在 165 页 100+ 脚注里是唯一没有出处的数；C21 的 $/小时 有出处，但不是作者要的那个量。
+</div>
+
+<div class="cards">
+  <div class="card"><div class="k">已锁定</div><div class="v">24 / 24</div><div class="n">全部 · 计分分母 23（C24 排除）</div></div>
+  <div class="card"><div class="k">C19 当前</div><div class="v" style="color:var(--red)">miss</div><div class="n">距阈值 63%</div></div>
+  <div class="card"><div class="k">C15 当前</div><div class="v" style="color:var(--amber)">partial</div><div class="n">记 0.5 分</div></div>
+  <div class="card"><div class="k">C16 预判</div><div class="v" style="color:var(--teal)">hit but late</div><div class="n">946 / 1000 MW</div></div>
+  <div class="card"><div class="k">C10 判据</div><div class="v" style="color:var(--teal)">[50, 200]</div><div class="n">唯一双向阈值</div></div>
+  <div class="card"><div class="k">封存状态</div><div class="v" style="color:var(--fg3)">阻塞</div><div class="n">已封存 sha256 ed5dfee3</div></div>
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:30px 0 10px;color:var(--fg2)">C19 · AI 收入千亿美元里程碑</h3>
+<p class="lede" style="margin-bottom:14px">作者从「每 6 个月翻倍」外推，预测 2026 年中某大厂 AI 收入 run rate 达 1000 亿美元。这是全文唯一一条纯粹由商业数字构成、验证成本极低的预测——只需翻财报。但恰恰因为「AI 收入」在 2026 年已成财经头条的争夺对象，口径必须写死。</p>
+
+<table>
+<thead><tr><th style="width:130px">规则</th><th>内容</th><th style="width:260px">拦截对象</th></tr></thead>
+<tbody>
+<tr><td class="pg">P1 官方口径</td><td class="q">仅认 SEC 备案、财报新闻稿、财报电话会、CEO/CFO 公开表述</td><td class="q">卖方研报、媒体估算、对投资者的非公开交底</td></tr>
+<tr><td class="pg">R1 排除混用</td><td class="q">非公开材料中的数字只记旁证，不入主判据</td><td class="q">OpenAI 500 亿 vs 业内流传 700 亿 这类不可比数字</td></tr>
+<tr><td class="pg">R2 排除替代</td><td class="q">云总收入、Copilot 席位、token 调用量、RPO、广告归因均不可单独作为达标证据</td><td class="q">Azure 破千亿 ≠ AI 收入破千亿</td></tr>
+</tbody>
+</table>
+
+<div class="note crit">
+  <strong>判定结果：miss（窗口内 mid-term，非终判）。</strong>四家适用主体中最高官方数字是 Microsoft 的 <b>370 亿美元</b>（FY26 Q3，同比 +123%），距阈值差约 63%。关键细节：Microsoft 在 FY26 Q4（7 月 29 日）<b>没有更新这个数字</b>，只报告了 Azure 年收入破 1000 亿——这正是 R2 要拦的典型情形。<br><br>
+  <b>附带发现：</b>作者的推论链隐含一个假设——AI 收入会很快成为财报上可单独计量的科目。而 2026 年的现实是，四家里只有两家披露，且口径不可互比。<b>AI 收入的可计量性，落后于 AI 收入本身。</b>这条观察足以单独成文。
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:34px 0 10px;color:var(--fg2)">C15 · 原型自动化研究员</h3>
+<p class="lede" style="margin-bottom:14px">这是全表最容易误判的一条。2026 年的公开叙事里，「agent 能跑完研究流程」常被等同于「agent 能做研究」——而 METR 设计 RE-Bench 的全部目的就是区分这两件事。</p>
+
+<table>
+<thead><tr><th>总时间预算</th><th>谁更强</th><th>倍率</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td class="pg">2 小时</td><td style="color:var(--teal)">代理</td><td class="pg">人类 4 倍</td><td class="q">短任务已明显超越</td></tr>
+<tr><td class="pg">8 小时</td><td style="color:var(--amber)">人类</td><td class="pg">略胜</td><td class="q">锁定阈值取此档</td></tr>
+<tr><td class="pg">32 小时</td><td style="color:var(--red)">人类</td><td class="pg">代理 2 倍</td><td class="q">时间越长人类优势越大</td></tr>
+</tbody>
+</table>
+
+<div class="note warn">
+  <strong>一个必须记住的数字对比：</strong>RE-Bench 记录代理提交方案速度是人类 <b>10 倍以上</b>、成本约 123 美元 vs 人类 1855 美元（便宜 15 倍），<b>但多数代理方案的得分接近 0。</b>速度优势真实，质量优势不存在。任何只引用「快 10 倍」的判定都是误读。<br><br>
+  因此锁定规则明确排除四类证据：实验室自述、无第三方复现的自我报告、任务集未公开的结果、<b>以及仅凭速度或成本判定的情形</b>。
+</div>
+
+<div class="note">
+  <strong>判定结果：partial（记 0.5 分）。</strong>T1「8 小时预算追平人类」未满足，但 2 小时档已达人类 4 倍，落入 partial 档。<br><br>
+  需注意：作者原文明确说「2026/27 模型速度是原型，还要一到两年才完全自动化」。<b>故本条判 miss/partial 不构成对他时间表的否定</b>——它检验的是原型阶段是否已在 2026 年内以可验证形式出现。这个区分是预注册的价值所在：它逼你在看到结果之前就写清楚，什么算打脸、什么不算。
+</div>
+
+<div class="note warn">
+  <strong>两条锁定的方法论收获。</strong><br>
+  <b>C19 揭示「代理量失效」</b>：当一条断言的观测量本身不存在于世界上（AI 收入没有统一的披露科目），判 miss 还是 ambiguous 取决于缺失是作者没预料到、还是行业没做到。本条判 miss，因为作者给出了明确时间点。<br>
+  <b>C15 揭示「速度—质量分离」</b>：代理快 10 倍、便宜 15 倍、但多数得分接近 0。任何只用速度或成本做判据的评测，都会系统性高估自动化程度——这个观察对你自己的评测工作有直接迁移价值。
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">C03 · 0.5 OOM/年 —— 一条被口径差掩盖的断言</h3>
+<p class="lede" style="margin-bottom:14px">原文 p.21：「for the last decade and a half … grown at roughly ~0.5 OOMs/year」。窗口约 2009–2024，样本是跨领域 frontier systems。而 Epoch 现行的 0.7 OOM/年只覆盖 2020 年后、只含前沿语言模型 top-5。两者的窗口与样本都不同。</p>
+
+<table>
+<thead><tr><th style="width:150px">口径</th><th>数值</th><th>窗口</th><th>样本</th></tr></thead>
+<tbody>
+<tr><td class="pg">Epoch 现行</td><td class="q"><b>0.7 OOM/年</b>（CI 0.6–0.8），5.2 个月倍增</td><td class="pg">2020 年起</td><td class="q">前沿语言模型 top-5</td></tr>
+<tr><td class="pg">Epoch 历史</td><td class="q">约 0.64 OOM/年（4.4x/年）</td><td class="pg">2010 年起</td><td class="q">notable models 全样本</td></tr>
+<tr><td class="pg">作者断言</td><td class="q"><b>0.5 OOM/年</b></td><td class="pg">约 2009–2024</td><td class="q">frontier systems · 跨领域</td></tr>
+</tbody>
+</table>
+
+<div class="note crit">
+  <strong>拿 0.7 判 0.5 会得出「作者低估、太保守」的结论——这个结论是错的。</strong>0.7 只覆盖 2020 年后，而 2020–2024 恰好是 GPT-3 到 GPT-4 这一轮超常放量期。作者本人在 p.21 也承认「GPT-2 到 GPT-3 一年内的算力放大是 unusual overhang」。用一段超常期的斜率去判一个十五年趋势的断言，等于用有利窗口替被检验者补分——<b>这与用不利窗口扣分是同一类错误。</b>
+</div>
+
+<p style="font-size:13px;color:var(--fg2);margin-top:6px">因此锁定判据是<b>「复算作者的数」</b>，而非引用 Epoch 的现行结论：对 2010 年起的 notable models 全样本做 log10(FLOP) ~ 年份 的 OLS，取斜率与 0.5 比较。≥0.45 判 hit，0.35–0.45 判 partial，&lt;0.35 判 miss。同时要求写下数据点数与样本量；若 Epoch 在窗口内更换统计方法，须报告变更前后的两个值。</p>
+
+<div class="note">
+  <strong>这是全表 24 条里单条错误代价最高的一条。</strong>若 R1 复算落在 0.5–0.7，结论是「作者数字没错，只是用了偏保守的全历史窗口」；若 R1 只有 0.35，则 2027 年 +2 OOM 的推论缺了分母，而全文第一部分（Counting the OOMs）正是这条推论的展开。
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">C16 · 1000 MW IT power —— 三个功率口径的陷阱</h3>
+<p class="lede" style="margin-bottom:14px">作者 Table 4 给出四档（2024: 100MW / 2026: 1GW / 2028: 10GW / 2030: 100GW）。本条只判跨越 1000 MW 这一个台阶，不判 10 GW——因为作者自己在脚注 49 留了后门：「若把所需功率分散到 100 个地点，会容易得多」。</p>
+
+<table>
+<thead><tr><th style="width:150px">功率口径</th><th>含义</th><th>相对关系</th><th>能否作主判据</th></tr></thead>
+<tbody>
+<tr><td class="pg" style="color:var(--teal)">IT power</td><td class="q">GPU 服务器供电</td><td class="pg">1.0x</td><td style="color:var(--teal)">✓ 唯一主判据</td></tr>
+<tr><td class="pg">facility power</td><td class="q">含冷却，PUE 1.2–1.4</td><td class="pg">1.2–1.4x</td><td style="color:var(--red)">✗ 口径作弊</td></tr>
+<tr><td class="pg">电网接入 / 装机</td><td class="q">许可与容量，非实际负载</td><td class="pg">可至 2–3x</td><td style="color:var(--red)">✗ 口径作弊</td></tr>
+</tbody>
+</table>
+
+<p style="font-size:13px;color:var(--fg2)">这一作弊在 2026 年的财经报道里极其常见——「某公司建了 1.8 GW 的数据中心」通常指电网接入，不是 IT 负载。因此锁定要求 hit 须由 SEC 文件、公司官方表述、第三方独立测绘三者中<b>至少两类</b>独立来源支持，媒体转述仅作旁证。</p>
+
+<table>
+<thead><tr><th>站点（2026-10-25 快照）</th><th>IT power</th><th>H100e</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td class="q">Colossus 2 · SpaceXAI, Memphis</td><td class="pg" style="color:var(--teal)"><b>946 MW</b></td><td class="pg">1,112k</td><td class="q">operational</td></tr>
+<tr><td class="q">Meta Hyperion</td><td class="pg">1,632 MW <em>（Q1 2028 规划）</em></td><td class="pg">4,143k</td><td class="q">在建</td></tr>
+<tr><td class="q">Microsoft Fairwater Wisconsin</td><td class="pg">2,263 MW <em>（Q2 2028 规划）</em></td><td class="pg">4,528k</td><td class="q">在建</td></tr>
+<tr><td class="q">全局（95 站点）</td><td class="pg">14.2 GW 合计</td><td class="pg">14.8M</td><td class="q">覆盖率 43%</td></tr>
+</tbody>
+</table>
+
+<div class="note warn">
+  <strong>预判：大概率 hit，但必须提前写下解释歧义。</strong>Colossus 2 已达 946 MW，距阈值 5.4%，且已公开规划 Q1 2027 扩至 1,531 MW IT。作者时间点是「~2026 年 1GW」，若 2027 年跨过属约 1 年延迟，记为 <b>hit but late</b>。<br><br>
+  但这一条 hit 既可能是「作者算力趋势判断正确」，也可能是「某一家公司执行超预期，行业整体节奏未必如此」。两种解释在最大值上看不出差别。因此判定时须同时记录<b>全球 95 站点的 IT power 中位数与分布</b>；若最大值 hit 而中位数远低于趋势线，记为「hit 但分布不支持」——分数照算，解释降级。
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">C09 · 同一基座的 8x —— 方向性易证，量级难证</h3>
+<p class="lede" style="margin-bottom:14px">作者引用 METR grab-bag 任务集：同一 GPT-4 基座从 5% 到「nearly 40%」。这是全表最好的天然对照实验。但作者只引了三行，图 16 原表有十行。</p>
+
+<table>
+<thead><tr><th>配置（均为 gpt-4-0613 者为同基座）</th><th style="width:110px">成功率</th><th>观察</th></tr></thead>
+<tbody>
+<tr><td class="q">basic gpt-4-base</td><td class="pg">5.0%</td><td class="q">作者引用的基线</td></tr>
+<tr><td class="q">basic gpt-4-0314</td><td class="pg">20.0%</td><td class="q">作者引用的第二点</td></tr>
+<tr><td class="q">AutoGPT gpt-4-0613</td><td class="pg">15.0%</td><td class="q" style="color:var(--amber)">同基座，脚手架不同 → 反而更低</td></tr>
+<tr><td class="q">LangChain ReAct gpt-4-0613</td><td class="pg">21.0%</td><td class="q">同基座</td></tr>
+<tr><td class="q">All tools gpt-4-0613</td><td class="pg">32.0%</td><td class="q">同基座</td></tr>
+<tr><td class="q">All tools + RM gpt-4-0613</td><td class="pg" style="color:var(--teal)"><b>38.0%</b></td><td class="q">作者写作「nearly 40%」的来源</td></tr>
+<tr><td class="q">All tools + RM gpt-3.5-turbo</td><td class="pg">11.0%</td><td class="q" style="color:var(--amber)">同脚手架、换基座 → 掉回 11%</td></tr>
+</tbody>
+</table>
+
+<div class="note crit">
+  <strong>两个被作者叙述掩盖的事实。</strong><br>
+  <b>① 同代内跨度 2.5x（15%–38%）</b>，全部是 gpt-4-0613，唯一变量是脚手架方式。也就是说<b>脚手架比「后训练」更能左右分数</b>。作者原文写的是「better posttraining, tools, and agent scaffolding」三者并列，但后续论证里「后训练」被当成了主要机制。<br>
+  <b>② 同脚手架下换基座掉回 11%（vs 38%）</b>，差 3.5x。这说明基座能力仍是主导变量，脚手架跨不过去。
+</div>
+
+<p style="font-size:13px;color:var(--fg2)">锁定判据三条同时成立方判 hit：T1 方向性（同基座提升 ≥2x）、T2 量级（最优/base ≥5x）、T3 独立性（第三方或公开可复现，且任务版本钉死）。关键约束是<b>任务集版本必须固定</b>——grab-bag 是 METR 早期内部套件，与现行 HCAST（180+ 任务）、RE-Bench（7 环境 / 61 专家）、Time Horizon 1.1（228 任务）都不可直接比对。若判定时改用后三者，须声明「任务集已变更，仅按 T1 判方向性」。</p>
+
+<div class="note warn">
+  <strong>预判：hit 或 partial，但解释价值有限。</strong>方向性几乎必然成立。不确定的是 5x 量级，以及 5% 这个 base model 基线在新任务集上是否还成立——base model 直接对话成功率极低是 grab-bag 的特点，换到 HCAST 式任务可能连个位数都不到，基线越低压出来的比值越大。<br><br>
+  <b>所以本条即便 hit，也只证明「unhobbling 是独立通道」，不证明作者对该通道 5–30x 有效算力等价增益的量级估计正确。</b>这个区分必须写死在判定记录里，否则 hit 会被误读为对整条论证的背书。
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">C10 · 人类思维速率（承重墙之一）</h3>
+<p class="lede" style="margin-bottom:14px">作者 p.35 Table 2 假设人类以 ~100 tokens/分钟思考、每周 40 小时。p.49–50 脚注 36 据此把算力换算成人：1 万亿 tokens/小时 ÷ 6,000 tokens/人时 ≈ 2 亿人等效，折半即 <b>1 亿 AI 研究者等效</b>。p.51 再乘 10–100x 串行速度。全链条里，这是唯一一个从未被任何文献测量过的数。</p>
+
+<table>
+<thead><tr><th style="width:130px">要素</th><th>设定</th><th style="width:250px">理由</th></tr></thead>
+<tbody>
+<tr><td class="pg">阈值</td><td class="q">中位数落在 <b>[50, 200] tokens/min</b></td><td class="q">作者「rough order of magnitude」的上下各 2 倍容差</td></tr>
+<tr><td class="pg">方向</td><td class="q"><code>in_range</code> —— 24 条中唯一双向阈值</td><td class="q">过快与过慢同样推翻作者换算</td></tr>
+<tr><td class="pg">数据来源</td><td class="q">拒绝二手引用，必须自做实证</td><td class="q">无现存文献可对</td></tr>
+<tr><td class="pg">实验设计</td><td class="q">≥12 被试 · ≥3 类任务（解析/编码/批判）· 出声思考录屏</td><td class="q">防止单一任务类型冒充「人类思维」</td></tr>
+<tr><td class="pg">排除证据</td><td class="q">阅读速度（250 wpm）· 打字速度（WPM）· 无原始实验的转述 · 用 LLM 输出长度反推</td><td class="q">阅读是消费不是产出；反推是循环论证</td></tr>
+</tbody>
+</table>
+
+<div class="note warn">
+  <strong>为什么必须是双向的。</strong>单向阈值隐含「越多越符合」，但 C10 不是。若实测远快于 100 tok/min，人每小时消耗的 token 更多，1 亿等效研究者被<b>高估</b>；若远慢于 100，等效数被低估，但同时 Table 2 的「1 万 token = 半个工作日」全部失真，时间映射整体错位。两个方向的失配都同样致命，所以判据只能是区间。
+</div>
+
+<div class="note crit">
+  <strong>一个被迫的工程改动。</strong>审计脚本原本只支持 <code>&gt;= &lt;= == &gt; &lt;</code>，<code>in_range</code> 被校验器拒绝。我没有把双向语义降级成文本约定、字段仍写 <code>&gt;=</code> —— 那样任何脚本批量评分都会得到错误的单调判定。<b>字段是机器读的，文本是人读的，两者不能互相顶替。</b>正确做法是扩展校验器，并加一条硬约束：<code>in_range</code> 时 threshold 必须含闭区间 <code>[lo, hi]</code>，否则报错。
+</div>
+
+<p style="font-size:13px;color:var(--fg2)">真正的产出可能不是那个中位数，而是<b>任务间差异</b>：若解析类、编码类、批判类相差 3 倍以上，那么「人类思维速率」这个提法本身就需要按任务类型拆开。这比判 hit/miss 有价值得多。另有一个不属本条检验范围的隐含假设——模型的 token 与人类的 token 是否等值——须记录备查。</p>
+
+<h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">C21 · 人类监督成本（承重墙之二）</h3>
+<p class="lede" style="margin-bottom:14px">原文 p.108–109：<em>RLHF will predictably break down as AI systems get smarter … human labeler-pay has gone from a few dollars for MTurk labelers to ~$100/hour for GPQA questions … even the best human experts spending lots of time won't be good enough.</em></p>
+
+<table>
+<thead><tr><th style="width:130px">陷阱</th><th>表现</th><th style="width:280px">处置</th></tr></thead>
+<tbody>
+<tr><td class="pg">断言偷换</td><td class="q">这段话混了 A 经济通道（付不起，可测）与 B 认识论通道（专家不知道，不可测）</td><td class="q">只判 A，并<b>明确记录 B 未被检验</b></td></tr>
+<tr><td class="pg">$/小时 冒充成本</td><td class="q">$2 → $95 的涨幅混入任务难度、资历门槛、交叉验证人数三个变量</td><td class="q">改用 <code>cost_per_usable_judgment</code></td></tr>
+<tr><td class="pg">横轴用模型名</td><td class="q">GPT-4 / GPT-5 / GPT-6 跨实验室不可比</td><td class="q">改用同一评测的连续分数（OOM 刻度）</td></tr>
+</tbody>
+</table>
+
+<pre><code>cost_per_usable_judgment = (price_per_hour × 判定耗时) / overlap_rate
+k = d log₁₀(cost_per_usable_judgment) / d(capability_gain_in_OOM)
+
+hit    k ≥ 0.4   成本涨幅 ≥ 能力涨幅的 2.5 倍，且 ≥3 个独立观测点成立
+partial 0.2 ≤ k &lt; 0.4
+miss   k &lt; 0.2   或窗口末段 k 转负</code></pre>
+
+<div class="note">
+  <strong>预注册时点的基线。</strong>GPQA（2024）：基础 $10/题，首轮专家验证答对 +$20，多数非专家答错 +$5，平均约 $95/小时、上限 $150/小时。2026 市场：Outlier STEM $30–50（高级 $75–110）、Mercor $50–120、Alignerr $35–65、通才 $15–30。两年间时薪上限推到 $120+，但<b>资历门槛同时上移</b>，不能读成「涨 26%」。
+</div>
+
+<div class="note crit">
+  <strong>预判 hit，但解释力被限制在 A 通道。</strong>独立支持比作者的单点价格观察更硬：奖励优化的缩放律给出 性能 ≈ Θ(√min{log M, K})，收益随标注量对数递减而成本线性增长——正是「指数成本 vs 对数收益」的结构性形式。<br><br>
+  但作者这段话的重点其实在 B 通道（<em>they simply wouldn't know</em>），而 B 要测「未来的专家判不了未来的输出」，前提是先有未来的输出。所以本条多半只能判 A。<b>若只判 A 而声称检验了整段话，就是偷换——这是本批最大的诚实边界。</b><br><br>
+  可用的旁证：GPQA 非专家验证者 546 题集准确率 <b>34% vs 四选一随机 25%</b>，判别力仅比抛硬币高 9 个百分点。这已是「标注者判别力接近噪声」的直接证据，但当时的对手尚非超人类系统，只能算不利前兆，不能当 B 成立的证据。
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">C04 · 算法效率 —— 一次把引理当成定理的错误</h3>
+<p class="lede" style="margin-bottom:14px">本批开头先纠正我自己的一个判断错误。上一批结束时，我把 C04 描述为「Epoch 3.0x/年可直接对标，与 C03 同构，半天可锁」。难度判断没错，<b>口径判断错了</b>。</p>
+
+<table>
+<thead><tr><th style="width:150px">原文成分</th><th>原句</th><th style="width:170px">性质</th></tr></thead>
+<tbody>
+<tr><td class="pg">前提</td><td class="q">"on average ~0.5 OOMs/year of compute efficiency"</td><td class="q" style="color:var(--amber)">与 C03 同一个数</td></tr>
+<tr><td class="pg">结论</td><td class="q">"<b>i.e. ~2 OOMs of gains compared to GPT-4 by 2027</b>"</td><td class="q" style="color:var(--teal)">C04 应锁此量</td></tr>
+<tr><td class="pg">区间</td><td class="q">"1-3 OOMs ... maybe with a best guess of ~2 OOMs"</td><td class="q">partial 带来源</td></tr>
+</tbody>
+</table>
+
+<div class="note crit">
+  <strong>若锁成斜率，会在加法里把同一输入计两次。</strong>在 <em>有效算力 = 物理 + 算法 + unhobbling</em> 的加法中，<code>0.5 OOM/年</code> 这个数字只能作为<b>输入</b>出现一次，归 C03；C04 提供的是<b>从该输入推出的累计结果</b>。照原计划锁 <code>&gt;= 0.5 OOM/year</code>，等于把引理当定理，然后在总账里重复计分。<br><br>
+  修正后的锁法：<code>&gt;= 2 OOM cumulative vs GPT-4 by 2027-12-31</code>，partial 带 <code>[1, 2)</code>。
+</div>
+
+<div class="note warn">
+  <strong>为什么不能引用 Epoch 现值 —— 那个值已不在面板上。</strong>三次检索后，Epoch 侧的算法效率数字处于不稳定状态：2024 年论文（231 个语言模型）给出「固定性能所需算力每 8 个月减半，95% CI 5–14 个月」≈ 0.5 OOM/年；2026-09-22《The plunging price of thought》给出总价降 13x/年、剥离硬件后纯算法 ≈ 3x/年；而旧的 <code>~3x/年</code> 已被 Epoch 自己称为 <b>outdated</b>，dashboard 改用 7.6 个月倍增。<b>更关键的是，2026-02-05 更新的 dashboard 已不再单列算法效率一项。</b>所以「对标 Epoch」这条路在判定时可能根本不存在。<br><br>
+  协议因此写死：必须自行复算 —— 三个冻结基准（MATH L5 50%、GPQA Diamond 75%、SWE-bench Verified 40%），每基准做 <code>log10(达到阈值所需算力) ~ 年份</code> 的 OLS，累计量 = 斜率 × 4.8 年，取中位数；三基准分歧超 3 倍则记 ambiguous。
+</div>
+
+<div class="note">
+  <strong>阈值敏感性的量级差。</strong>Epoch 自己的 2022 年视觉论文声明：算法效率估计值随「基准 + 阈值」选择可变动约 <b>10 倍</b>——易阈值下算法进步显得不重要，难阈值下算法几乎解释全部增益。对比 C03 的口径差是 <b>0.2 OOM 足以翻转结论</b>。10 倍 vs 0.2 OOM，差一个量级。所以本条的协议把「钉死基准与阈值」放在了给出任何数值之前，而不是之后。
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">C06–C11 · 五条折算率 —— 它们不能逐条判，因为三条互相包含</h3>
+<p class="lede" style="margin-bottom:14px">「整组一起锁」的真正理由不是它们相关，而是<b>不去重就无法加总</b>。把五条当五个可相加的数，会把 3–6 OOM 的总账凭空多算 1–2 OOM。</p>
+
+<table>
+<thead><tr><th style="width:60px">条</th><th style="width:150px">原文数</th><th style="width:170px">本审计锁</th><th>为何下调</th></tr></thead>
+<tbody>
+<tr><td class="pg">C06</td><td class="q">&gt;100x (&gt;2 OOM)</td><td class="pg" style="color:var(--teal)">&ge; 1.0 OOM (10x)</td><td class="q">单点来自 InstructGPT 一次实验的偏好胜率外推；依赖评判者且有饱和上限</td></tr>
+<tr><td class="pg">C07</td><td class="q">&gt;10x (&gt;1 OOM)</td><td class="pg" style="color:var(--teal)">&ge; 0.5 OOM (3.16x)</td><td class="q">2024 后 SOTA 普遍内置 CoT，「关 CoT」臂已不可得，只能用预算缩减代理</td></tr>
+<tr><td class="pg">C08</td><td class="q">5–30x (0.7–1.5 OOM)</td><td class="pg" style="color:var(--teal)">&ge; 0.7 OOM (5x)</td><td class="q">取下沿。区间宽 6 倍，且「脚手架」无统一定义</td></tr>
+<tr><td class="pg">C11</td><td class="q">1.2:1 / 4:3</td><td class="pg" style="color:var(--teal)">&ge; 1.15 : 1</td><td class="q">取两值下沿，使判据同时覆盖原生值与外推值</td></tr>
+</tbody>
+</table>
+
+<div class="note warn">
+  <strong>C11 的原文有两个不同的数，这一点此前被合并了。</strong>p.36 Figure 18 的 Jones(2021) Hex 实测是 <code>1.2 OOM 测试时 ≈ 1 OOM 训练</code> = <b>1.20 : 1</b>；p.37 作者外推到语言模型写成 <code>+4 ≈ +3</code> = <b>1.33 : 1</b>。作者用 "very roughly" 连接，但前者是棋盘游戏实测，后者是语言模型上的猜测。判定时必须分别报告，<b>不得只报一个数然后宣称「与作者一致」</b>。
+</div>
+
+<div class="note crit">
+  <strong>兑换率的方向是最容易搞反的地方。</strong><code>兑换率 = 测试时 OOM / 训练 OOM</code>。大于 1 表示测试时算力更「贵」；<b>小于 1 反而对作者更有利</b>（更容易解锁）。所以 <code>miss = 兑换率 &lt; 1.0</code> 的含义是「测试时算力远比作者设想的划算，作者的判断过于保守」，而不是「作者判断错了方向」。方向搞反，会把作者的有利结果读成不利结果。
+</div>
+
+<div class="note">
+  <strong>C08 的核心隐患：「脚手架」不是一个可复现的对象。</strong>脚手架可含检索增强、工具调用、多轮自我修正、程序执行、子代理分解、记忆外置、投票集成——不同组合的增益差异<b>远大于 5–30x 区间本身</b>。协议强制要求判定记录附出脚手架规格说明书（工具集、轮数上限、是否允许自我修正、是否允许代码执行），否则一律记 ambiguous。
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">C02 · 总账 —— 六条去重规则，以及一个「数字对了归因错了」的预判</h3>
+<p class="lede" style="margin-bottom:14px">C02 不是独立测量，是三轴相加：<code>Total = A_phys + A_algo + A_unhob</code>。G1 组锁完，它才有落点——否则那六条协议里写的「见 C02 组汇总判据」就是悬空引用。</p>
+
+<table>
+<thead><tr><th style="width:60px">规则</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td class="pg">D1</td><td class="q">C03 与 C04 不得重复——已通过把 C04 锁成累计口径规避</td></tr>
+<tr><td class="pg">D2</td><td class="q">C03 不得重复计硬件性价比——须写明用原始 FLOP 还是美元调整后 FLOP</td></tr>
+<tr><td class="pg" style="color:var(--red)">D3</td><td class="q"><b>C07 与 C08 必须去重</b>——CoT 常被归为脚手架的一种；若 C08 规格含 CoT，须扣除</td></tr>
+<tr><td class="pg" style="color:var(--red)">D4</td><td class="q"><b>C09 与 C08 必须去重</b>——C09 的 5%→40% 已含工具与脚手架收益，只能取较大者或按已分离分量相加</td></tr>
+<tr><td class="pg" style="color:var(--red)">D5</td><td class="q"><b>C11 不与任何一条重复</b>——它是兑换率，是乘法系数，不是加法项</td></tr>
+<tr><td class="pg">D6</td><td class="q">已计入轴 3 的收益不得再算进 C03/C04——只能记一次</td></tr>
+</tbody>
+</table>
+
+<div class="note crit">
+  <strong>预注册的方向性判断：最可能是「数字对了，归因错了」。</strong>仅物理轴与算法轴就能贡献 <code>0.5 × 4.8 + 2 = 4.4 OOM</code>，已落在作者 3–6 区间内、接近下沿 3。这会让 Total 命中，却使作者的真正主张——<b>「unhobbling 才是主杠杆」</b>——落空。<br><br>
+  这是全书论证结构上最脆弱的一环：作者想论证的是「要担心的是 unhobbling 带来的跃变」，而数字可能由最平淡的两条轴就凑齐了。所以协议强制要求报告<b>三轴各自贡献占比</b>，而非只报 Total。<br><br>
+  门槛取区间下沿 3 而非最佳猜 5，有三个理由：加总有重复计数风险（D3/D4）；3–6 才是断言边界；取下沿偏宽松（对作者有利），如此仍未达标则 miss 结论更强。
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">C20 · 算法秘密 —— 同一页里的三个不相容数字</h3>
+<p class="lede" style="margin-bottom:14px">这是全书最难判定的一条，也是原文自身最矛盾的一条。</p>
+
+<table>
+<thead><tr><th style="width:130px">层</th><th>原文</th><th style="width:120px">数值</th></tr></thead>
+<tbody>
+<tr><td class="pg">正文一层</td><td class="q">"worth having a <b>10x or more</b> larger cluster"</td><td class="pg">下限 10x</td></tr>
+<tr><td class="pg">正文二层</td><td class="q">"if they can defend their secrets ... easily be worth <b>10x-100x</b>"</td><td class="pg">区间 + 条件</td></tr>
+<tr><td class="pg" style="color:var(--red)">脚注三层</td><td class="q">"perhaps a <b>3x</b> increase ... but we're leaking <b>3x</b> algorithmic secrets"</td><td class="pg" style="color:var(--red)">3x</td></tr>
+</tbody>
+</table>
+
+<div class="note crit">
+  <strong>三个数不相容。</strong>若泄漏价值真只有 3x，则 10x 下限不成立；若真有 10–100x，则脚注的 3x 是严重低估。判定时必须指明实际落在哪一层，不能笼统算「命中区间」。<br><br>
+  <b>本审计因此不锁 10x，改锁可分离的双条件</b>：条件 A 为连续 ≥ 4 个半年度 <code>gap_OOM ≥ 1.0</code>（折算 <code>gap = (落后月数/12) × C03 斜率</code>）；条件 B 为一例经独立核实的真实泄漏（两个独立信源 + 当事方确认或可复现技术细节），且第三方复现效应 ≥ 3x 算力当量。<b>只满足 A 记 partial</b>——因为差距可能来自投入不足或数据劣势，而非「秘密没泄漏」。
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">C22 · CoT 可读性与忠实度 —— 必须显式降级的弱断言</h3>
+<p class="lede" style="margin-bottom:14px">原文是「best guess + could go quite far + in my view」三重弱化。实质主张是「简单测量就能起很大作用」——这是<b>效果主张</b>，在窗口内不可证伪：若没起大作用，作者可说「只是还没做够」。</p>
+
+<table>
+<thead><tr><th style="width:60px">事件</th><th>内容</th><th style="width:230px">核对要求</th></tr></thead>
+<tbody>
+<tr><td class="pg">E1</td><td class="q">≥ 3 家前沿实验室系统卡出现 CoT 可读性/忠实度<b>定量</b>度量</td><td class="q">指标名 + 数值 + 方法引用三者同时在场</td></tr>
+<tr><td class="pg">E2</td><td class="q">≥ 1 个公开基准被 ≥ 3 家实验室共同引用</td><td class="q">须含数据集 + 脚本 + 排行榜</td></tr>
+<tr><td class="pg">E3</td><td class="q">≥ 1 例模型因该项不达标而推迟发布 / 降级定位</td><td class="q">须有当事方说明或可信报道</td></tr>
+</tbody>
+</table>
+
+<div class="note crit">
+  <strong>降级本身对作者有利，所以必须写在明面上。</strong>原断言锁成效果命题会永远悬空；降级为三条计数事件后，它变成一个 2028 年底能给答案的命题。判定规则：三事件全中 hit，中两项 partial，一项或零项 miss。<br><br>
+  <b>还有一条对本次审计自身的约束。</b>本条是全书与本审计立场最接近的一条——作者在此承认 <em>the science of measuring alignment is still in its infancy</em>。若 C22 判 hit，它也是对「评测方法学是瓶颈」的外部佐证。<b>但正因利害相关</b>，判定时更须防止把「我关心的方向被采纳了」读成「作者的能力预测对了」。这是两个不同命题。这条约束写进了协议正文，不只是备注。
+</div>
+
+<div class="note crit">
+  <strong>七条锁完（第四批时点），一个更尖锐的模式浮现了。</strong>前三批（C19 C15 C03 C16 C09）的发现是<b>口径可换、结论会漂</b>：AI 收入指哪条科目、训练算力取哪个窗口、功率是 IT 还是 facility、任务集是哪一版、8 小时还是 32 小时预算。每一个都是 2–3 倍量级的判断空间，而作者的结论恰好都落在这些空间的边界附近。<br><br>
+  这一批（C10 C21）不同：<b>不是「数字取错」，而是「数字不存在」。</b>C10 的 100 tokens/分钟没有出处；C21 的 $/小时 有出处但不是作者要的那个量。由此得到一条方法论收获——<b>一条断言的可证伪性，不由它写得多肯定决定，而由它给出的量是否有可操作定义决定。没定义的量必须先造定义，再谈判定；而造定义的过程本身会暴露作者的隐含假设。</b>C10 暴露的是「模型 token ≈ 人类 token」，C21 暴露的是「人力市场价 = 监督成本」。<br><br>
+  这也是这套表真正的产出——不是那 24 个 hit/miss，而是这 24 次被迫把模糊措辞翻译成可判定条件的过程。
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">C01 · 2027 年可替代 AI 研究员 —— 一个已经在失效的度量</h3>
+<p class="lede" style="margin-bottom:14px">作者的原话是「<b>strikingly plausible</b>」——这是概率判断，不是确定性断言。所以本条判 miss 不等于作者错，只等于这条概率判断未兑现。协议只操作化「做研究员的工作」的下限，不判 AGI 全域。</p>
+
+<table>
+<thead><tr><th style="width:110px">METR 自承的缺陷</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td class="pg">W1 上限不可靠</td><td class="q">超过 ~16 小时的估计不可靠（扩展套件里最新模型失败的题太少）</td></tr>
+<tr><td class="pg" style="color:var(--red)">W2 脏度不足</td><td class="q">HCAST/RE-Bench 任务在 METR 自建 16 分脏度量表上均值 <b>3.2</b>，无一题超 8；而「写一篇好的研究论文」会被评为 <b>9–15</b>。在套件最脏的一半上，<b>没有任何模型超过 30% 成功率</b></td></tr>
+<tr><td class="pg">W3 领域不均</td><td class="q">数学与软件相近，但视觉电脑操作类时间视野低 <b>40–100 倍</b></td></tr>
+</tbody>
+</table>
+
+<div class="note warn">
+  <strong>一个必须预先设计的失效：那条曲线已经停更了。</strong>METR 的 time-horizons 页面已于 <b>2026-09-08 停止积极维护</b>，最新收录模型是 2026-04 的 Mythos Preview 早期版本 —— 而本条到期是 2027-12-31。<br><br>
+  所以协议写了三级规则：<b>F1</b> 恢复更新则用官方值；<b>F2</b> 未恢复则允许第三方复现（须公开任务集/脚本/逐题结果 + 一致性检验）；<b>F3</b> 两者皆无，轨道 A 记 <code>unavailable</code>，<b>整条降级为 partial（最多）</b>。<br><br>
+  F3 对作者不利，但这是<b>证据可得性问题</b>，不是断言强度问题。两者必须分开记 —— 若等到判定时才发现没数据，只会有两个坏选择：用过期数据硬判，或无限期推迟。
+</div>
+
+<div class="note">
+  <strong>双门槛的理由。</strong>阈值是 <code>50% ≥ 8 小时</code> 且 <code>80% ≥ 2 小时</code>。前者因为研究员的工作单位是天；后者防止 50% 单点虚高 —— METR 自己指出 80% 通常比 50% 低 3–5 倍。<br><br>
+  看当前值就明白为什么要两个：Opus 4.6 的 50% 视野已达 <b>12.0 小时</b>（跨过 8 小时），但 80% 视野只有约 <b>70 分钟</b>（距 2 小时仍有距离）。<b>单看 50% 会给出过早的乐观结论。</b>
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">C05 · 本十年 10 OOM —— 一句话里两个数，不能相加</h3>
+<p class="lede" style="margin-bottom:14px">原文：「<em>I estimate that we will do ~5 OOMs in 4 years, and over ~10 this decade overall.</em>」</p>
+
+<div class="note crit">
+  <strong>两数不可相加，也不可互相替代。</strong>数一（5 OOM / 4 年）就是 C02 的断言，本条不重复判；数二（本十年 ≥ 10 OOM）才是本条。<b>相加会得出 15 OOM 的荒谬结论</b>；而 C02 达标也不蕴含本条达标。<br><br>
+  起算点是必须钉死的口径：「this decade」可读作 <b>R1</b> 2020-01-01 起（自然十年，主判定用此，对作者更严格）或 <b>R2</b> 2024 起（宽松）。两值必须同时报告，但<b>不得因 R1 判 miss 而改用 R2 重判</b>。
+</div>
+
+<div class="note">
+  <strong>作者自己给了一个可核查的锚点。</strong>同页写：「<em>Even at its bygone heyday, Moore's law was only 1–1.5 OOMs/decade.</em>」协议因此要求同时报告 <code>Total_10y / 1.25 OOM</code>：若 ≈10 OOM 是摩尔定律的 6.7–10 倍（措辞成立）；若只有 3–4 OOM，只有 2–4 倍 —— 后者会削弱「racing through the OOMs」，即便数值仍不小。
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">C12–C14 · 自动化研究员链条 —— 前一条是后一条的前提</h3>
+<p class="lede" style="margin-bottom:14px">这三条不是并列，是一条因果链：<code>C12（有多少个等价研究员）→ C13（能把进展压缩多少）→ C14（所以何时超智能）</code>。判定必须按此顺序。</p>
+
+<div class="note">
+  <strong>C12 是全表唯一可逐级算术复核的断言，我算了一遍。</strong><br>
+  <code>GPU 3e7 × $1/GPU-hr × 33K tokens/$ = 9.9e11 tokens/hr</code>（作者写 ~1e12，无误）<br>
+  <code>÷ 6,000 tokens/human-hr = 1.65e8</code>（作者写 ~2e8，偏高一档但同量级）<br>
+  <code>预留一半 = 8.25e7</code>（作者写 1e8，同量级）<br><br>
+  <b>算术正确。问题不在算术，在假设。</b>三级连乘各有一个自由参数，其中<b>最脆弱的是 tokens/$</b> —— 每改善 10 倍，结果差一个 OOM。作者在脚注 35 自己处理过这问题，论证是自洽的（算法效率抵消模型变大的成本上升），但他在同一段承认传导「often, but not always」。故本审计锁 <b>1e7</b>（作者量的十分之一）。
+</div>
+
+<div class="note crit">
+  <strong>C13 的原文有一个单向免疫装置。</strong>「<em>could probably compress a human-decade ... into less than a year (and that seems conservative)</em>」——<b>「保守」一词使该断言在方向上不可错</b>：说少了算保守，说多了算乐观，两个方向都对。等于没有可证伪的边界。<br><br>
+  处理办法不是忽略它，而是换成可比的压缩比 <code>K = 自动化期年化进展 / 人类期年化进展</code>（同度量、同组织、控制算力与人力），并把门槛从作者的量级 <b>10x 降到 3x</b>。3x 已足够区分质变与常规提速（无自动化时靠人力扩张也能达 1.5–2x）。<b>这个降级必须明说 —— 否则读者会把宽松化误读为作者本来就只主张了那么少。</b>
+</div>
+
+<div class="note warn">
+  <strong>C14 的「&gt;90%」必须先造分母，而且要在判定前造。</strong>90% 指什么，原文没定义。协议在 2026-12-31 前公开登记一份 15–25 项的研究子任务清单与权重（由独立第三方设定），<b>若判定时发现清单未按期登记，阶段一记 ambiguous</b>。<br><br>
+  这是唯一防止事后挪动门槛的办法。若等到 2028 年再定「90% 指什么」，则任何结果都可被解释为达标或未达标。<br><br>
+  阶段二则拒绝为「超智能」造定义，只判作者给定的操作化条件（<code>K ≥ 10</code>）。判定表述必须是「10x 加速是否成立」，<b>而不是「是否到达超智能」</b>。三档合并后最可能的落点是 <b>partial</b> —— 时间表前半对了，后半错了。
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">C17 / C18 · 投资规模与电力约束 —— 一个偏高，一个已有强证据</h3>
+
+<table>
+<thead><tr><th style="width:150px">条目</th><th>作者的数</th><th style="width:180px">本审计锁</th></tr></thead>
+<tbody>
+<tr><td class="pg">C17 2028 年投资</td><td class="q">~$2T（同页另有一亿加速器、美国 20% 电力、台积电 100%）</td><td class="pg" style="color:var(--amber)">&ge; $1.0T</td></tr>
+<tr><td class="pg">C18 电力约束</td><td class="q">Power has become the binding constraint</td><td class="pg" style="color:var(--teal)">A 类 &ge; 60% 且居首</td></tr>
+</tbody>
+</table>
+
+<div class="note crit">
+  <strong>C17 的 2 万亿与作者自己的 C18 相冲突。</strong>若电力确实是首要瓶颈（p.77），则投资额不可能在 2027→2028 一年内再翻倍 —— 瓶颈部门的物理产出增速不支持。公开锚点也支持这一点：2026 年四大 hyperscaler capex 约 <b>7250 亿</b>（+77%），含 neocloud/主权基金后合计首破 1 万亿，Moody's 预测 2027 年接近 1 万亿。<b>从 1 万亿到 2 万亿需再翻倍，而变压器交期约 5 年、并网 5–7 年。</b><br><br>
+  故锁 1 万亿（作者量的一半，仍是宽松化）。同时须校验同页四个数字的内部一致性 —— 若钱、芯片、电、代工产能之间相差超过 3 倍，则该断言即使在投资额上命中，也须标注「<b>场景内部不自洽</b>」。
+</div>
+
+<div class="note">
+  <strong>C18 截至当前已有强正向证据，但「居首」须做分类计数。</strong>最有说服力的一条是<b>微软公开表示约 800 亿美元 Azure 订单因电力不足无法交付</b> —— 资本与需求都不缺，只缺电。其余：2026 年美国约 12GW 宣布 vs 约 5GW 在建（缺口 7GW，多数无供电方案）；高压变压器交期趋向 5 年；Morgan Stanley 测算 2026–2028 美国缺口约 38GW。<br><br>
+  但有一条区域限定必须记：<b>中国是「芯片受限」而非电力受限</b>（审批 3–6 个月 vs 美国 12–13 个月），欧洲因电网受限，英国并网平均超 8 年。所以「电力居首」是<b>美/欧</b>的结论，不是全球结论。核心现象 "announced is not energized" 本身就是判定的关键 —— 把宣布容量算作已交付，会抹掉整条断言的证据基础。
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">C23 / C24 · 制度断言，以及一条被排除的断言</h3>
+
+<div class="note">
+  <strong>C23 的「某种形式」必须先变成实质要件。</strong>作者写「<em>some form of government AGI project</em>」——「some form」极宽，不作操作化则事后必然争议。协议锁两个实质要件（择一即可）：<b>A 规制杠杆</b>（法定/行政令级的强制事前审批，实质检验是「能否在法律上阻止一个已建成集群的运行」）、<b>B 资源杠杆</b>（≥100 亿美元专项预算线，且可用于直接训练或采购前沿算力）。<br><br>
+  明确不算的六类里，最常见的是<b>只有咨询职能的委员会、只有报告义务的机构、只有自愿承诺的框架</b>。
+</div>
+
+<div class="note crit">
+  <strong>C24 被排除，不计分。这是本批最重要的方法论决定。</strong>本书对其他弱断言都是「先降级再判」：C22 效果主张 → 采纳主张，C13「十年压一年」→ K≥3，两者都仍在作者语义内。<b>C24 不能走这条路</b> —— 把「超智能」换成任何能力阈值，被判的就不再是作者这句断言了。<br><br>
+  <b>那不是审计，是改写。</b>而 C14 已经承接了那条链条最后一个可操作环节。<br><br>
+  由此得到两条准入准则：<b>T1</b> 断言涉及的每个关键词，是否有不依赖本审计立场的操作化定义？<b>T2</b> 若给出定义，判的是作者的主张还是本审计的代理量？<b>任一不满足，则该断言应排除而非降级。</b><br><br>
+  代价必须明示：校准分母从 <b>24 → 23</b>；且本条是全书最醒目的断言（标题级位置），排除它会让审计看起来回避了作者最强的声明。但「不判」与「判错」是两件事 —— 脚本原来把任何非 hit 都算 miss，会把「没判」记成「判错」，这个缺陷已修。
+</div>
+
+<div class="note crit">
+  <strong>十五条锁完，第三种失效模式出现了。</strong>前两批的病是<b>口径可换</b>（数字取错）；第三批是<b>数字不存在</b>（需先造定义）。这一批是第三种：<b>数字存在于错误的位置。</b><br><br>
+  C04 的 <code>0.5 OOM/年</code> 是真的，但它是<b>前提</b>而非结论——锁错位置就会在加法里重复计分。C11 的 <code>1.2:1</code> 也是真的，但那是 Hex 棋盘游戏的实测，作者外推到语言模型时已经悄悄换成了 <code>4:3</code>；两个数并存于相邻两页。C20 的三个数（10x / 10-100x / 3x）不是取错，是作者在同一页给出了三个互不相容的判断。<br><br>
+  由此补上前一批的结论：<b>一条断言的可证伪性取决于它给出的量是否有可操作定义；而一条断言的可检验性还取决于那个量在论证结构中的位置。</b>同一个数字放在前提位与结论位，含义完全不同；同一段话里出现两个相邻的数，判定时必须先问它们是同一个量还是两个量。<br><br>
+  第三种失效模式比前两种更难被读者发现，因为它伪装成"数字都对"。C04 和 C11 的任何单句引用都是准确的，只有把整段放回 OOM 加法里才会暴露。
+</div>
+
+<h2><span class="num">07</span>工程实现</h2>
+<p class="lede">断言表以 YAML 存储，配套脚本做三重把关：结构校验、阈值封存、机械评分。核心约束是<b>封存后不可改动</b>。</p>
+
+<pre><code>situational-awareness/
+├── PROVENANCE.md          原文出处 · sha256 · 复现方式（原文不随仓库分发）
+├── data/claims.yaml       24 条断言 · 手工维护
+├── data/seal.json         封存记录（阈值填完后生成）
+├── data/seal_history.jsonl  历次封存（每次重封都留一行，可追溯）
+├── data/scores/*.json     按季度评分
+├── c10/                   C10 实证包（协议 · 题库 · 采集器 · 分析器 · 校准）
+└── audit.py               校验 / 封存 / 评分</code></pre>
+
+<p style="margin-top:20px;font-size:13px;color:var(--fg2)">四条命令构成完整工作流：</p>
+<pre><code><span style="color:var(--teal)">python audit.py validate</span>   # 结构校验；当前 PASS，24 条全锁 / 0 条待锁定
+<span style="color:var(--teal)">python audit.py brief</span>      # 按到期日与可判定性排序的待办清单
+<span style="color:var(--teal)">python audit.py seal</span>       # 阈值未填齐则拒绝执行 —— 已测试，闸门有效
+<span style="color:var(--teal)">python audit.py score</span>      # 未封存即拒绝评分，输出按类型命中率</code></pre>
+
+<div class="note">
+  <strong>当前状态：封存闸门仍生效。</strong><code>validate</code> 输出 PASS，待锁定 0 条；已封存（sha256 ed5dfee3…，C10 折算条款修正后重封）。<code>seal</code> 仍会拒绝执行并返回退出码 1——这是设计意图。阈值必须人工锁定：每条都要写明具体数值、数据源与口径，尤其 C17（是否计入电力基础设施）、C19（厂商不单拆 AI 收入时如何替代）这类口径争议大的条目。
+</div>
+
+<h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">补充 · C10 实证包：为什么它跑不出判定，以及这本身查出了什么</h3>
+
+<p style="font-size:13px;color:var(--fg2);margin:14px 0">C10 是全表唯一一条协议里明写「不接受二手引用、必须自做实证」的断言。这次把实证包建起来了：<code>c10/</code> 下有题库（12 题 / 3 类，已冻结）、分段计时采集器、统计判定脚本、试次字段表。但<b>采集工具就绪不等于数据存在</b> —— 12 个被试的出声思考数据必须由人做，本包不产出它，判定因此仍是 <code>pending</code>。</p>
+
+<div class="note crit">
+  <strong>已封存的 C10 协议里有一处必须修正的错误，而它足以改变判定。</strong>C10 协议 S4 原本写「英文 ~0.75 词/token、中文 ~1.5 字/token」—— 这是 bpe 时代的经验常数，而作者指的是 GPT-4。<br><br>
+  用 GPT-4 系词表（<code>o200k_base</code>）实测：英文 <b>1.1216</b> tok/词（常数换算 1.3333，偏差 <b>+18.9%</b>），中文 <b>0.8492</b> tok/汉字（常数换算 0.6667，偏差 <b>−21.5%</b>）。<br><br>
+  <b>两个偏差方向相反。</b>套用常数会让英文被试的速率被高估 19%、中文被试被低估 21.5%，在一份中英混合样本里中文被试会显得比英文被试慢 40% —— 而这是纯粹的折算假象，不是能力差异。在 50–200 的判定带里，20% 足以让 hit 变 partial。<br><br>
+  已改为「每条转写现场实测系数并写入记录，禁止跨记录套用平均值」，重新封存（<code>sha256 ed5dfee3…</code>），旧封存归档在 <code>data/seal_history.jsonl</code>。<b>这次改动是本审计第一次在封存后修改协议</b> —— 值得记下的是：封存闸门正确地拦住了它（<code>verify</code> 报 FAIL），而不是让它悄悄过去。
+</div>
+
+<div class="note crit">
+  <strong>ASR 转写校准：一个「看起来对」的指标如何掩盖了完全错误的结论。</strong>本包用真实长度的中文转写，经 TTS 合成朗读、faster-whisper 转写，比对真值：
+
+  <table style="margin-top:12px">
+    <thead><tr><th style="width:180px">指标</th><th style="width:140px">数值</th><th>判读</th></tr></thead>
+    <tbody>
+      <tr><td class="pg">字符保留率</td><td class="q">79/82 = <b>96.3%</b></td><td>看起来很好</td></tr>
+      <tr><td class="pg">填充词保留率</td><td class="q" style="color:var(--red)">0/3 = <b>0%</b></td><td>✗ C10 要的恰好是这部分</td></tr>
+      <tr><td class="pg">字符级相似度</td><td class="q" style="color:var(--red)"><b>71.4%</b></td><td>✗ 大量术语被替换</td></tr>
+      <tr><td class="pg">综合结论</td><td class="q"><b>UNUSABLE</b></td><td>两条硬指标不过</td></tr>
+    </tbody>
+  </table>
+
+  <br>为什么 96.3% 是个陷阱：转写删掉全部 3 个「嗯」，同时把「按左端点排序」写成「安作断点排序」、「嵌套」写成「千套」。<b>删词与错字在总数上互相抵消</b>，所以总数看着对。<br><br>
+  而删填充词不是模型太小的表现，是 ASR 的<b>设计目标</b> —— 语言模型解码天然偏好通顺句子，而填充词在给定上下文下概率极低。换更大的模型只会修错字，不会恢复填充词；恢复填充词需要的恰恰是相反的偏好。故协议规定转写方法必须记 <code>manual</code>，并新增 <code>filler_retention ≥ 80%</code> 这一判据 —— 只看字数会得出完全相反的结论。
+</div>
+
+<div class="note">
+  <strong>顺带查出的一处相关性：折算系数与「人类思维速率」是同一枚硬币的两面。</strong>校准用的那段中文朗读是 299 汉字/分。按实测系数 0.8492 折算，就是 <b>254 tokens/分</b> —— 落在作者 <code>~100</code> 的 2.5 倍外，按判定带是 <code>miss</code>。<br><br>
+  但这不能当结论，理由有三条且都要写清：（a）这是朗读不是思考，朗读有文本可循，思考有停顿与回溯；（b）TTS 语速是模型参数，不代表人类语速；（c）出声思考的填充词与重复会推高词数、真实解题的停顿会拉低速率，两个方向在上表里都被掩盖了。<br><br>
+  它只说明一件事：<b>作者的 100 不是从「说话速率」推出来的，是从「内部独白」估的，而两者可能差 2 倍以上。</b>这正是 V1（可外化性下偏）与 V2（空转）两条威胁无法在同一实验里分离的原因 —— 也是说 12 人数据不能省的原因。
+</div>
+
+<div class="note">
+  <strong>四条效度威胁，一条也消除不了，只能标出来。</strong><b>V1</b> 出声思考只能捕捉到被外化的独白，故 R 是下界，下偏幅度未知（1.2 倍到 3 倍都可能）；<b>V2</b> 空转，为了「有话可说」而产生的填充言语，方向与 V1 相反，两者在同一实验里不可分离；<b>V3</b> 双重任务代价，出声思考占用工作记忆，会改变思考节奏；<b>V4</b> 单题 4–15 分钟的思考不等同于书里说的「想一个项目几个月」，故 <code>Millions → Multiple months</code> 那一行本测量不支持，只能靠 C13 的压缩比间接检验。<br><br>
+  还有一条必须先想清楚的：若 12 人的四分位距超过中位数，按协议判 <code>ambiguous</code>。但那实质上是对作者<b>更重</b>的打击 —— 它意味着 Table 2 的换算基准不是单一常数，而是随任务与个体差 3 倍以上的分布。届时不能让一个 <code>ambiguous</code> 标签把结论吞掉，必须在正文里说清楚。<br><br>
+  <b>2026-10-25 决定：不预先规定这一点，等数据出来再定。</b>理由与重开条件记在 <code>c10/DECISION_LOG.md</code> —— 该文件不是协议的一部分，不进封存，不影响判定。留这条记录的唯一作用是：将来若真判 <code>ambiguous</code>，可以证明「当时就想过、并且明确选择了不规定」，而不是等结果出来再声称本来就是这个意思。
+</div>
+
+<h2><span class="num">08</span>下一步</h2>
+<ul>
+  <li><b style="color:var(--teal)">✓ 已完成 · 锁定 C19、C15 阈值与口径</b>（2026-10-24）—— 含 P1/R1/R2 三条强制口径规则与四类排除证据清单。详见 <code>LOCKED_C19_C15.md</code>。</li>
+  <li><b style="color:var(--teal)">✓ 已完成 · 锁定 C03、C16、C09 阈值与口径</b>（2026-10-24）—— 三条输入类断言。C03 要求复算作者口径而非引用 Epoch 现值；C16 只认 IT power 且需双源支持；C09 冻结任务集版本并排除速度类证据。详见 <code>LOCKED_C03_C09_C16.md</code>。</li>
+  <li><b style="color:var(--teal)">✓ 已完成 · 锁定 C10、C21 阈值与口径</b>（2026-10-24）—— 两条承重墙。C10 是唯一双向阈值 <code>in_range [50, 200]</code>，协议要求自做至少 12 被试的实证并排除阅读速度/打字速度/循环论证；C21 拆成 A 经济通道（判）与 B 认识论通道（记录未检验），主判据换成 <code>cost_per_usable_judgment</code>。详见 <code>LOCKED_C10_C21.md</code>。</li>
+<li><b style="color:var(--teal)">✓ 已完成 · 锁定 C04、C20、C22 与折算率组 C06–C11，并锁 C02 组汇总</b>（2026-10-24）—— 本批含两处对前期判断的纠正：C04 由斜率口径改为累计口径（<code>&ge; 2 OOM vs GPT-4</code>），避免与 C03 重复计分；C11 拆分出原文两个不同的数（Hex 实测 1.20:1 与作者外推 1.33:1）。C02 落地六条去重规则（D3/D4/D5 为本批技术难点：C07/C08/C09 存在包含关系、C11 是系数不是项）。详见 <code>LOCKED_C04_C02.md</code>。</li>
+<li><b style="color:var(--teal)">✓ 已完成 · 2026Q4 首次中间评分</b> —— C19 判 miss、C15 判 partial，写入 <code>data/scores/2026Q4.json</code>。两条均为窗口内判定，非终判。</li>
+  <li><b style="color:var(--teal)">✓ 锁定全部 24 条并封存</b>（2026-10-24）—— C01 双轨 + 数据源失效三级规则；C05 起算点钉死为 2020；C12 逐级算术复核确认作者在自身假设下正确；C13 拆出「保守」免疫装置；C14 要求 2026-12-31 前登记子任务清单；C24 排除不计分（分母 24→23）。详见 <code>LOCKED_C01_C24.md</code>。</li>
+  <li><b style="color:var(--teal)">✓ 封存并公开时间戳</b>（2026-10-24）—— <code>audit.py seal</code> 已执行，<code>claims_sha256 = ed5dfee3…</code>，<code>claim_count = 24</code>，原文 PDF 哈希一并记录。首次封存（<code>e697c5cb…</code>）因 C15/C19 阈值尚为不可读形式而作废并重封 —— <b>机器能解析不等于人能理解，封存前必须人工逐条读一遍。</b></li>
+  <li><b>执行判定 · 最近的动作在 2026-12-31</b> —— 三件事同一天到期，但性质完全不同：<b>C19 终判</b>（唯一 2026 年到期的能力/商业断言）；<b> C14 子任务清单公开登记</b>（截止 2026-12-31，是全表唯一对审计者自己设的时间锁，逾期则阶段一记 ambiguous）；<b>C23 第一检查点</b>（非终判，仅记录要件 A/B 的制度进展）。</li>
+  <li><b>2027 年的两次判定</b> —— 2027-06-30（C15，能力比 ≥1.0x@8h）；2027-12-31 <b>13 条集中到期</b>，占全表一半以上。这一次判定的工作量远超其他任何时点，须提前 1–2 个月开始收集证据，尤其是 C01（METR 页面已停更，见 F1/F2/F3）与 C02 的三轴分解。</li>
+  <li><b style="color:var(--teal)">✓ C10 实证包已建，采集与分析管线跑通</b>（2026-10-24）—— 见 §07·补充。协议细化出三处口径纠正；ASR 转写校准实测结论是<b>不可用</b>；但 <b>≥12 人的人类数据仍未采</b>，判定仍为 pending。详见 <code>c10/C10_EXPERIMENT.md</code>。</li>
+  <li><b>做 C10 的人类数据采集</b> —— 工具就绪，缺的是人：12 人 / 36 试次 / 约 15 小时。这是全表唯一一条「必须自己产生数据」且成本最低的断言。</li>
+  <li><b>把 C21 做成完整研究</b> —— 专家标注成本 × 判别力 × 模型能力的联合演化曲线。与你的评测主线直接同构；作者本人在文中承认这是「被严重低估」的方向。建议升级为独立研究，而非审计的附属工作。</li>
+  <li><b>补齐 C16 的分布</b> —— 当前基线只记了最大值（Colossus 2 的 946 MW），协议要求全球 95 站点的 IT power 中位数与分布。缺分布则无法区分「趋势判断正确」与「单点执行超预期」，而这正是 C16 与 C18 的判定分界线。</li>
+  <li><b>C06–C11 折算率组的正确判法是加总，不是逐条平均</b> —— 它们共同支撑「3–6 OOM」。六条各自 hit 而乘积偏离区间，与四条 miss 而总数仍落在区间内，都是可能的结果；逐条报命中率会同时掩盖这两种情形。协议已强制要求报三轴贡献占比与去重后的合计。</li>
+</ul>
+
+<footer>
+  抽取自 Leopold Aschenbrenner《Situational Awareness: The Decade Ahead》（2024-06-06 版，165 页）。所有页码为 PDF 物理页码。<br>
+  本表是方法论工具，不代表对原作者立场的支持或反对。阈值已全部锁定并封存（<code>sha256 ed5dfee3…</code>），此后不再改动口径。更新于 2026-10-24（第六批锁定 · 二十四条全定 + 封存 · C10 折算条款修正后重封）。
+</footer>
+
+</div>
+</body>
+</html>

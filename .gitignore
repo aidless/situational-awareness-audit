@@ -1,0 +1,37 @@
+# 原文副本 —— 不进入版本库
+#
+# raw/ 下是《Situational Awareness》(2024-06-06 版) 的 PDF 与逐页文本，
+# 属受版权保护作品。本仓库只收录审计者自己的工作产物
+# (阈值表 / 判定协议 / 报告 / 代码 / C10 实证包)，
+# 不含原文全文。复现方式见 PROVENANCE.md。
+raw/
+
+# 中间产物：tts_clean.wav 是 22.05k 的合成中间文件，
+# 校准复现只需 16k 单声道那份 (calib/tts_clean16k.wav)
+c10/calib/tts_clean.wav
+
+# 标准集
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+.env
+.env.*
+!.env.example
+*.bak
+*.bak.*
+*.tmp
+.DS_Store
+Thumbs.db
+
+# 采集状态文件 (probe.py 的临时状态，record 后即归档为 *.done.json)
+c10/data/probe_state.json
+
+# 工作区残留快照 —— 追溯链由 seal_history.jsonl + LOCKED_*.md 承担，
+# 中间备份不进库，避免被误认为权威版本
+*.beforefinal
+*.bak.yaml
+*.orig
+
+# 自测残留: S00 不是真实被试，其状态归档无信息价值
+c10/data/probe_state_S00_*.done.json
