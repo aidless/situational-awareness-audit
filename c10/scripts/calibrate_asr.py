@@ -65,7 +65,8 @@ def transcribe(audio: np.ndarray, model_size: str = "tiny", lang: str = "zh") ->
     # initial_prompt 让输出简体+带标点，否则默认输出繁体且几乎无标点（首版踩过）
     prompt = "以下是普通话的句子，使用简体中文。" if lang == "zh" else ""
     m = WhisperModel(model_size, device="cpu", compute_type="int8",
-                     download_root="/home/liuzewen/.workbuddy/cache/whisper")
+                     download_root=os.environ.get("WHISPER_CACHE",
+                                                  os.path.expanduser("~/.cache/whisper")))
     segs, _info = m.transcribe(audio, beam_size=5, language=lang,
                                vad_filter=False, initial_prompt=prompt)
     return "".join(s.text for s in segs).strip()
