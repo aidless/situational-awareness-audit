@@ -1,17 +1,23 @@
 name: audit
 
-# 三条检查，任意一条变红就说明有人动过不该动的东西。
+# 九条检查，任意一条变红都说明有人动过不该动的东西。
 #
-# 1. validate   —— 断言表结构完整性 + 24 条阈值齐全
-# 2. verify     —— 封存一致性：claims.yaml 的 sha256 是否仍等于 seal.json 里记的值
-#                  这一条是本 workflow 的核心。它变红 = 有人在封存后改了断言表，
-#                  而按纪律这必须走「明示修正 + 归档 + 重封存」的流程，
-#                  不能是悄悄改完直接推。
+# 1. validate      —— 断言表结构完整性 + 24 条阈值齐全
+# 2. verify        —— 封存一致性：claims.yaml 的 sha256 是否仍等于 seal.json 里记的值
+#                     这一条是核心。变红 = 有人在封存后改了断言表，而按纪律这必须走
+#                     「明示修正 + 归档 + 重封存」的流程，不能悄悄改完直接推。
 # 3. c10 self-test —— C10 判定器的规则自测（判定带边界 / 唯一分母 / synthetic 闸门）
+# 4. 台历漂移      —— 重新生成 data/schedule.md 并与仓库内版本比对。
+#                     到期条数是可机械导出的量，手抄必漂移（曾把 12 条写成 13 条）。
+# 5. 预注册完整性  —— interrater/PREREG.md 的 sha256 是否仍等于 PREREG.sha256。
+#                     与第 2 条同理：分析计划也不能在看到数据之后改。
+# 6. kappa 自测    —— 一致性统计的解析解校验（含加权 kappa 与退化情形）
+# 7. 判定包生成    —— 按固定 seed 出包，验证盲化与泄漏扫描仍有效
+# 8. 判别力自测    —— 用合成判定者验证这套流程能显示出预注册预期的分化
+# 9. 语法检查      —— 全部脚本可编译
 #
-# 全部三条都不需要原文 PDF（本仓库不含原文），也不装任何非标准库依赖
-# 除了 pyyaml。所以 CI 在干净环境里必然跑得通 —— 这一点很重要：
-# 一个需要原文才能绿的 CI 是没用的 CI。
+# 全部九条都不需要原文 PDF（仓库不含原文），除 pyyaml 外不装任何依赖。
+# 一个需要原文才能变绿的 CI 是没用的 CI。
 
 on:
   push:
@@ -19,17 +25,21 @@ on:
     paths:
       - 'data/**'
       - 'audit.py'
+      - 'deadlines.py'
       - 'c10/**'
+      - 'interrater/**'
       - '.github/workflows/audit.yml'
   pull_request:
     paths:
       - 'data/**'
       - 'audit.py'
+      - 'deadlines.py'
       - 'c10/**'
+      - 'interrater/**'
       - '.github/workflows/audit.yml'
   schedule:
-    # 每周一 09:00 UTC 主动巡检一次封存是否漂移。
-    # 不依赖有人推送 —— 封存被外部 PR 改掉时，schedule 也会抓到。
+    # 每周一 09:00 UTC 主动巡检。不依赖有人推送 ——
+    # 封存或预注册被外部 PR 改掉时，schedule 也会抓到。
     - cron: '0 9 * * 1'
   workflow_dispatch:
 
@@ -56,7 +66,6 @@ jobs:
       - name: ② 封存一致性（核心）
         run: |
           python audit.py verify
-          # verify 的退出码即门禁；这里再显式打印一次当前哈希便于人工比对
           python - <<'PY'
           import hashlib, json, pathlib
           h = hashlib.sha256(pathlib.Path("data/claims.yaml").read_bytes()).hexdigest()
@@ -71,5 +80,25 @@ jobs:
       - name: ③ C10 判定器自测
         run: python c10/scripts/analyze.py --self-test
 
-      - name: ④ 语法检查（含依赖 tiktoken 的脚本）
-        run: python -m py_compile audit.py c10/scripts/*.py
+      - name: ④ 台历漂移（机械计数 vs 仓库内版本）
+        run: |
+          python deadlines.py --write
+          if ! git diff --exit-code -- data/schedule.md; then
+            echo "::error::data/schedule.md 与 claims.yaml 不一致，请运行 python deadlines.py --write 并提交"
+            exit 1
+          fi
+
+      - name: ⑤ 预注册完整性
+        run: cd interrater && sha256sum -c PREREG.sha256
+
+      - name: ⑥ 一致性统计自测
+        run: python interrater/kappa.py --selftest
+
+      - name: ⑦ 判定包生成（盲化 + 泄漏扫描）
+        run: python interrater/packet_gen.py --n 12 --seed 20261025 --strict
+
+      - name: ⑧ 判别力自测（合成判定者）
+        run: python interrater/selftest_pipeline.py
+
+      - name: ⑨ 语法检查
+        run: python -m py_compile audit.py deadlines.py interrater/*.py c10/scripts/*.py

@@ -35,3 +35,7 @@ c10/data/probe_state.json
 
 # 自测残留: S00 不是真实被试，其状态归档无信息价值
 c10/data/probe_state_S00_*.done.json
+
+# 判定包: 序号 → 断言 ID 的映射是盲化的一部分, 判定期间不得外泄。
+# 可复现 —— packet_gen.py 用同一 seed 能重新生成同一映射。
+interrater/packets/*/_map.json
