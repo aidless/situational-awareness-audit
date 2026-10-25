@@ -49,6 +49,8 @@ C02 的预算是 `A_phys + A_algo ≈ 4.4 OOM`，已落在作者 3–6 的区间
 
 ```
 ├── PROVENANCE.md          原文出处 · sha256 · 复现方式（原文不随仓库分发）
+├── LICENSE                代码 MIT
+├── LICENSE-DOCS.md        文档与数据 CC BY 4.0
 ├── report.html            审计报告（八章 + C10 补充节）
 ├── LOCKED_*.md            六批锁定记录，含每条的判断依据与自纠
 ├── data/claims.yaml       24 条断言 · 阈值 · 判定协议
@@ -88,4 +90,4 @@ python audit.py score        # 输出校准报告
 
 ## 许可
 
-代码 MIT；文档与数据（`claims.yaml`、锁定记录、报告）CC BY 4.0。原文不在此仓库内，其版权归原作者。
+代码 MIT（`LICENSE`）；文档与数据 CC BY 4.0（`LICENSE-DOCS.md`）。原文不在此仓库内，其版权归原作者；`claims.yaml` 中的简短摘录仅用于定位与核对，同样不受本仓库许可约束。
