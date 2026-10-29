@@ -86,7 +86,13 @@ jobs:
 
       - name: ④ 台历漂移（机械计数 vs 仓库内版本）
         run: |
-          python deadlines.py --write
+          # Regenerate at the base date already written into the file. Without
+          # --asof the generator stamps date.today(), so this gate went red on
+          # every day the repository was not committed to -- a daily false alarm
+          # that says nothing about claims.yaml.
+          asof="$(sed -n 's/.*基准日 \([0-9][0-9-]*\).*/\1/p' data/schedule.md | head -1)"
+          test -n "$asof" || { echo "::error::data/schedule.md 头部缺少基准日"; exit 1; }
+          python deadlines.py --write --asof "$asof"
           if ! git diff --exit-code -- data/schedule.md; then
             echo "::error::data/schedule.md 与 claims.yaml 不一致，请运行 python deadlines.py --write 并提交"
             exit 1

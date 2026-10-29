@@ -1,7 +1,7 @@
 # 判定台历
 
 > 本文件由 `deadlines.py --write` 生成，请勿手工编辑。
-> claims.yaml sha256 `ed5dfee3339989d5…` · 基准日 2026-10-25
+> claims.yaml sha256 `ed5dfee3339989d5…` · 基准日 2026-10-28
 >
 > CI 会重新生成并比对，手抄的到期条数一旦漂移就会变红。
 
