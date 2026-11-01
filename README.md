@@ -88,6 +88,27 @@ python interrater/selftest_pipeline.py                            # 判别力自
 
 依赖：`pyyaml`（`requirements.txt`）。C10 实证包的完整功能另需 `tiktoken`、`faster-whisper`、`piper-tts`，见 `c10/requirements.txt` —— 这些不进 CI，因为九条检查都不需要它们。
 
+### 本地重放 CI（复算）
+
+CI 的十条检查可本地一次性重放（2026-11-01 实测全部 PASS；`ruff` 需 `pip install ruff`）：
+
+```bash
+python audit.py validate                                   # ① 断言解析  → "结构校验: PASS 断言 24 条"
+python audit.py verify                                     # ② 封存一致  → "封存一致性: PASS"
+python audit.py brief                                      # ③ 待锁定清单 → 0 条
+python deadlines.py --write && git diff --exit-code data/schedule.md   # ④ 台历防漂移
+cd interrater && sha256sum -c PREREG.sha256                # ⑤ 预注册完整性
+python interrater/kappa.py --selftest                      # ⑥ 一致性统计自测 → "自测 全部通过"
+python interrater/packet_gen.py --n 12 --seed 20261025 --strict  # ⑦ 判定包生成（生成含 _map.json 的新包）
+python interrater/selftest_pipeline.py <最新包路径>         # ⑧ 判别力自测 → "PASS（流程能显示分化）"
+python -m py_compile audit.py deadlines.py interrater/*.py c10/scripts/*.py   # ⑨ 语法
+ruff check --select F821,F811,F401 audit.py deadlines.py interrater/ c10/scripts/  # ⑩ 静态
+```
+
+> **顺序敏感**：⑧ 的 `selftest_pipeline.py` 默认取 `packets/` 里最新包，而最新包必须含 `_map.json`（由 ⑦ 生成）。`_map.json` 是盲判期的私有映射（gitignore），**不会随仓库分发**——所以直接跑 ⑧ 而没先跑 ⑦ 会报 `FileNotFoundError: _map.json`，这是设计而非缺陷。CI 按 ⑦→⑧ 顺序执行，本地重放请保持同序。
+>
+> ⑧ 输出是**合成判定者**（SYNTHETIC 头标），用于验证实验设计有判别力，**不代表人类判定结论**。
+
 ## CI
 
 每条涉及 `data/`、`deadlines.py`、`interrater/` 的推送与 PR 都会跑 `.github/workflows/audit.yml`，另外每周一 09:00 UTC 主动巡检一次。十条检查：
