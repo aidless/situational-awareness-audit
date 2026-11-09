@@ -17,7 +17,7 @@
 
 `verify` 另外核对 `seal.json` 的 `claim_count` 与 `claims.yaml` 的条数。两条不一致就 FAIL，即使哈希被人同时改过、条数忘了改。
 
-相对基线的检查是 `python audit.py trail --against <git 修订>`。哈希变了，但历史文件里没有基线那条哈希，就 FAIL。CI 在 pull request 和 push 上对基线跑这一条。已写下的评分若被删掉，或改了 verdict 却没有 `revision_note`，同一条命令也会 FAIL。
+相对基线的检查是 `python audit.py trail --against <git 修订>`。哈希变了，但没有任何历史行的 `claims_sha256` **字段**等于基线哈希，就 FAIL。把旧哈希写进某行的 `superseded_reason` 不算留痕。引入理由字段之后的归档还要有非空的 `superseded_reason`。2026-10-24 更早的那条归档没有这个字段，只有基线恰好是它自己的哈希时才被承认。CI 在 pull request 和 push 上对基线跑这一条。已写下的评分若被删掉，或改了 verdict 却没有 `revision_note`，同一条命令也会 FAIL。列不出基线的评分文件时，这条检查失败，而不是当成「没有评分可删」。
 
 **机器查不到**
 
@@ -30,7 +30,7 @@
 
 `audit.py score` 只把 `hit` / `partial` / `miss` 计入本窗口分母。`unavailable` 与 `ambiguous` 单独列出，不进分母，也不计为 miss。无法识别的 verdict（例如 `pending`）直接报错，不默认丢进 miss。
 
-到期日未到的记录一律打印为**非终判**。评分文件里在到期日前写上 `final: true`，或把 `window_open` 设为 false，`drift` 会 FAIL。过了到期日也不会自动升级为终判：没有明确的 final 标记就一直是非终判。
+到期日未到的记录一律打印为**非终判**。评分文件里在到期日前写上 `final: true`（布尔或字符串 `"true"`），或把 `window_open` 设为 false，`drift` 会 FAIL。过了到期日也不会自动升级为终判：没有明确的 final 标记就一直是非终判。
 
 当前 `data/scores/2026Q4.json` 仍是窗口内记录：C19 miss（到期 2026-12-31），C15 partial（到期 2027-06-30）。两条都还开着窗口。本仓库不删除这两条，也不把它们改写成终判。若窗口内确实要改判，新记录必须带 `revision_note`，旧判定留在 git 历史里。
 

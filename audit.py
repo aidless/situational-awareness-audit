@@ -100,10 +100,25 @@ def place_verdict(claim, verdict):
     return "unknown"
 
 
+def as_bool(value):
+    """JSON 布尔, 以及写成字符串的 true/false。别的值不当成布尔。"""
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        low = value.strip().lower()
+        if low == "true":
+            return True
+        if low == "false":
+            return False
+    return None
+
+
 def judgment_status(score, claim, today):
     """到期日前一律不是终判。没有 final 标记时, 过期也不自动升级。"""
     due = date.fromisoformat(str(claim["due"]))
-    if score.get("final") is True and today >= due and score.get("window_open") is not True:
+    final = as_bool(score.get("final"))
+    window = as_bool(score.get("window_open"))
+    if final is True and today >= due and window is not True:
         return "终判"
     return "非终判"
 
@@ -349,10 +364,11 @@ def oom_errors(claims):
     if "C11" not in parts:
         errors.append("C02.aggregated_from 不再列出 C11, D5 会失去盯防对象")
     c04 = str(by_id["C04"].get("threshold", ""))
-    if "cumulative" not in c04.lower():
+    # non-cumulative 不得被认成累计口径。
+    if not re.search(r"(?<![A-Za-z-])cumulative(?![A-Za-z-])", c04, re.I):
         errors.append("C04 阈值未标明 cumulative, 有与 C03 斜率重复计入的风险")
-    if re.search(r"0\.5\s*OOM\s*/\s*year", c04, re.I):
-        errors.append("C04 被锁成 0.5 OOM/year, 会与 C03 把同一输入计两次")
+    if re.search(r"0\.5\s*OOM\s*/\s*(?:year|年)", c04, re.I):
+        errors.append("C04 被锁成 0.5 OOM/year 或 0.5 OOM/年, 会与 C03 把同一输入计两次")
     if str(by_id["C03"].get("threshold", "")).strip() == c04.strip():
         errors.append("C03 与 C04 阈值相同")
     if by_id["C11"].get("claim_type") != "conversion_factor":
@@ -384,11 +400,13 @@ def interim_errors(doc, today):
             except ValueError:
                 errors.append(f"{s.get('id')}: due 无法解析")
                 continue
-            if s.get("final") is True and today < due:
+            final = as_bool(s.get("final"))
+            window = as_bool(s.get("window_open"))
+            if final is True and today < due:
                 errors.append(f"{s['id']}: 到期日 {claim['due']} 未到, 不得标记 final")
-            if s.get("window_open") is False and today < due:
+            if window is False and today < due:
                 errors.append(f"{s['id']}: 到期日未到却写了 window_open=false")
-            if s.get("final") is True and s.get("window_open") is True:
+            if final is True and window is True:
                 errors.append(f"{s['id']}: final 与 window_open 同时为真")
     return errors
 
@@ -476,6 +494,32 @@ def selftest():
     check(missing_counts["miss"] == 0 and missing_counts["unavailable"] == 1, "单独的 unavailable 进入了 miss")
     scored_n = sum(missing_counts[k] for k in SCORED_VERDICTS)
     check(scored_n == 0, "证据缺失进入了计分分母")
+    quoted = "a" * 64
+    check(
+        baseline_archive_error(
+            [{"claims_sha256": "bbbb", "superseded_reason": "见 " + quoted}],
+            quoted,
+        ) is not None,
+        "写在理由字符串里的哈希被当成归档",
+    )
+    check(
+        baseline_archive_error(
+            [{"claims_sha256": "abc", "superseded_reason": "修正笔误"}],
+            "abc",
+        ) is None,
+        "claims_sha256 字段相等且有理由仍被拒绝",
+    )
+    legacy = next(iter(LEGACY_SEAL_HASHES))
+    check(
+        baseline_archive_error([{"claims_sha256": legacy}], legacy) is None,
+        "早期无理由归档被拒绝",
+    )
+    check(
+        baseline_archive_error([{"claims_sha256": "newhash"}], "newhash") is not None,
+        "没有理由的新归档被放行",
+    )
+    check(as_bool("true") is True and as_bool("false") is False, "字符串布尔没有被认出")
+    check(as_bool(True) is True and as_bool("yes") is None, "非布尔字符串被当成真")
     return errors
 
 
@@ -652,6 +696,48 @@ def cmd_score(doc, today=None):
     return 0 if not errors else 1
 
 
+# 引入 superseded_reason 之前的那一次归档。基线若恰好是它, 不补写理由。
+LEGACY_SEAL_HASHES = frozenset({
+    "45c03a9605e9aa5f3b955497c23e74d2a1546e04a3f9772a5feb73e930a9c02e",
+})
+
+
+def load_history_rows():
+    rows, errors = [], []
+    if not HISTORY.exists():
+        return rows, errors
+    for i, line in enumerate(HISTORY.read_text(encoding="utf-8").splitlines(), 1):
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            errors.append(f"seal_history 第 {i} 行不是 JSON")
+            continue
+        if not isinstance(row, dict):
+            errors.append(f"seal_history 第 {i} 行不是对象")
+            continue
+        rows.append(row)
+    return rows, errors
+
+
+def baseline_archive_error(rows, digest):
+    """基线哈希必须等于某一行的 claims_sha256。写在理由字符串里不算留痕。"""
+    if not digest:
+        return "基线 seal.json 没有 claims_sha256"
+    matches = [r for r in rows if r.get("claims_sha256") == digest]
+    if not matches:
+        return (
+            "封存哈希相对基线变了, 但没有任何历史行的 claims_sha256 等于基线哈希。"
+            "把旧哈希写进 superseded_reason 不算留痕。"
+        )
+    if any(str(r.get("superseded_reason", "")).strip() for r in matches):
+        return None
+    if digest in LEGACY_SEAL_HASHES:
+        return None
+    return "历史行记下了基线哈希, 但没有 superseded_reason。请用 audit.py seal --reason 归档。"
+
+
 def git_show(rev, path):
     r = subprocess.run(
         ["git", "show", f"{rev}:{path}"],
@@ -688,14 +774,18 @@ def cmd_trail(against):
     head_seal = json.loads(SEAL.read_text(encoding="utf-8"))
     base_hash = base_seal.get("claims_sha256")
     head_hash = head_seal.get("claims_sha256")
-    history = HISTORY.read_text(encoding="utf-8") if HISTORY.exists() else ""
-    if base_hash != head_hash and base_hash not in history:
-        errors.append(
-            "封存哈希相对基线变了, 但 seal_history.jsonl 没有基线那条哈希。"
-            "这是没有留痕的事后修改。"
-        )
-    base_scores = git_files(against, "data/scores") or []
-    base_scores = [p for p in base_scores if p.endswith(".json")]
+    rows, hist_errors = load_history_rows()
+    errors.extend(hist_errors)
+    if base_hash != head_hash:
+        msg = baseline_archive_error(rows, base_hash)
+        if msg:
+            errors.append(msg)
+    base_scores = git_files(against, "data/scores")
+    if base_scores is None:
+        errors.append(f"无法列出 {against} 的 data/scores, 因此不能证明评分没有被删")
+        base_scores = []
+    else:
+        base_scores = [p for p in base_scores if p.endswith(".json")]
     for path in base_scores:
         raw = git_show(against, path)
         if raw is None:
