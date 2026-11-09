@@ -1,26 +1,30 @@
 name: audit
 
-# 十条检查，任意一条变红都说明有人动过不该动的东西。
+# 下面每一条变红，都说明有人动过不该动的东西，或文档与脚本已经对不上。
 #
-# 1. validate      —— 断言表结构完整性 + 24 条阈值齐全
-# 2. verify        —— 封存一致性：claims.yaml 的 sha256 是否仍等于 seal.json 里记的值
-#                     这一条是核心。变红 = 有人在封存后改了断言表，而按纪律这必须走
-#                     「明示修正 + 归档 + 重封存」的流程，不能悄悄改完直接推。
-# 3. c10 self-test —— C10 判定器的规则自测（判定带边界 / 唯一分母 / synthetic 闸门）
-# 4. 台历漂移      —— 重新生成 data/schedule.md 并与仓库内版本比对。
+# 1. validate      —— 断言表结构完整性，并打印条数与计分分母
+# 2. verify        —— 封存一致性：claims.yaml 的 sha256 与条数是否仍等于 seal.json。
+#                     变红 = 有人在封存后改了断言表。按纪律必须走
+#                     「明示修正 + 归档 + seal --reason」，不能悄悄改完直接推。
+# 3. drift         —— 条数与 METHOD.md 的分母、证据缺失不计 miss、OOM 去重规则。
+# 4. score         —— 有 data/scores 就打印。窗口未关的记录标为非终判，miss 保留。
+# 5. trail         —— pull request / push 相对基线：哈希变了必须在 seal_history 里，
+#                     已写下的判定不许静默删除或改判。每周定时任务没有基线，不跑这条。
+# 6. c10 self-test —— C10 判定器的规则自测（判定带边界 / 唯一分母 / synthetic 闸门）
+# 7. 台历漂移      —— 重新生成 data/schedule.md 并与仓库内版本比对。
 #                     到期条数是可机械导出的量，手抄必漂移（曾把 12 条写成 13 条）。
-# 5. 预注册完整性  —— interrater/PREREG.md 的 sha256 是否仍等于 PREREG.sha256。
+# 8. 预注册完整性  —— interrater/PREREG.md 的 sha256 是否仍等于 PREREG.sha256。
 #                     与第 2 条同理：分析计划也不能在看到数据之后改。
-# 6. kappa 自测    —— 一致性统计的解析解校验（含加权 kappa 与退化情形）
-# 7. 判定包生成    —— 按固定 seed 出包，验证盲化与泄漏扫描仍有效
-# 8. 判别力自测    —— 用合成判定者验证这套流程能显示出预注册预期的分化
-# 9. 语法检查      —— 全部脚本可编译
-# 10. 静态检查     —— ruff 查未定义名。加这条的直接动因：calibrate_asr.py 用了
+# 9. kappa 自测    —— 一致性统计的解析解校验（含加权 kappa 与退化情形）
+# 10. 判定包生成   —— 按固定 seed 出包，验证盲化与泄漏扫描仍有效
+# 11. 判别力自测   —— 用合成判定者验证这套流程能显示出预注册预期的分化
+# 12. 语法检查     —— 全部脚本可编译
+# 13. 静态检查     —— ruff 查未定义名。加这条的直接动因：calibrate_asr.py 用了
 #                     os.environ 却没 import os，py_compile 通过、CI 全绿，
 #                     函数一调就 NameError。编译级检查抓不到名字解析错误。
 #
-# 前九条都不需要原文 PDF（仓库不含原文），除 pyyaml 外不装依赖；第 10 条只多装
-# 一个 ruff（静态分析器，无运行时耦合）。
+# 除最后的 ruff 之外，这些检查都不需要原文 PDF，运行时依赖只有 pyyaml。
+# ruff 只做静态分析，无运行时耦合。
 # 一个需要原文才能变绿的 CI 是没用的 CI。
 
 on:
@@ -30,6 +34,10 @@ on:
       - 'data/**'
       - 'audit.py'
       - 'deadlines.py'
+      - 'README.md'
+      - 'METHOD.md'
+      - 'FAILURE_MODES.md'
+      - 'requirements.txt'
       - 'c10/**'
       - 'interrater/**'
       - '.github/workflows/audit.yml'
@@ -38,6 +46,10 @@ on:
       - 'data/**'
       - 'audit.py'
       - 'deadlines.py'
+      - 'README.md'
+      - 'METHOD.md'
+      - 'FAILURE_MODES.md'
+      - 'requirements.txt'
       - 'c10/**'
       - 'interrater/**'
       - '.github/workflows/audit.yml'
@@ -55,6 +67,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # push 上的 trail 要能看到推送前的提交。仓库很小。
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -62,29 +77,36 @@ jobs:
           cache: pip
 
       - name: 安装依赖
-        run: pip install pyyaml
+        run: pip install -r requirements.txt
 
       - name: ① 结构校验
         run: python audit.py validate
 
       - name: ② 封存一致性（核心）
-        run: |
-          python audit.py verify
-          python - <<'PY'
-          import hashlib, json, pathlib
-          h = hashlib.sha256(pathlib.Path("data/claims.yaml").read_bytes()).hexdigest()
-          s = json.loads(pathlib.Path("data/seal.json").read_text())
-          print(f"实际  claims_sha256 = {h}")
-          print(f"封存  claims_sha256 = {s['claims_sha256']}")
-          print(f"封存时间 {s['sealed_at']}  断言数 {s['claim_count']}")
-          assert h == s["claims_sha256"], "封存不一致：断言表在封存后被修改"
-          print("封存一致性: PASS")
-          PY
+        run: python audit.py verify
 
-      - name: ③ C10 判定器自测
+      - name: ③ 漂移（条数 / METHOD / 证据缺失 / OOM）
+        run: python audit.py drift
+
+      - name: ④ 评分（有文件则打印；非终判）
+        run: python audit.py score
+
+      - name: ⑤ 相对基线的留痕
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch --no-tags origin "${{ github.base_ref }}"
+            python audit.py trail --against "origin/${{ github.base_ref }}"
+          elif [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            python audit.py trail --against "${{ github.event.before }}"
+          else
+            python audit.py trail --against "0000000000000000000000000000000000000000"
+          fi
+
+      - name: ⑥ C10 判定器自测
         run: python c10/scripts/analyze.py --self-test
 
-      - name: ④ 台历漂移（机械计数 vs 仓库内版本）
+      - name: ⑦ 台历漂移（机械计数 vs 仓库内版本）
         run: |
           # Regenerate at the base date already written into the file. Without
           # --asof the generator stamps date.today(), so this gate went red on
@@ -98,22 +120,22 @@ jobs:
             exit 1
           fi
 
-      - name: ⑤ 预注册完整性
+      - name: ⑧ 预注册完整性
         run: cd interrater && sha256sum -c PREREG.sha256
 
-      - name: ⑥ 一致性统计自测
+      - name: ⑨ 一致性统计自测
         run: python interrater/kappa.py --selftest
 
-      - name: ⑦ 判定包生成（盲化 + 泄漏扫描）
+      - name: ⑩ 判定包生成（盲化 + 泄漏扫描）
         run: python interrater/packet_gen.py --n 12 --seed 20261025 --strict
 
-      - name: ⑧ 判别力自测（合成判定者）
+      - name: ⑪ 判别力自测（合成判定者）
         run: python interrater/selftest_pipeline.py
 
-      - name: ⑨ 语法检查
+      - name: ⑫ 语法检查
         run: python -m py_compile audit.py deadlines.py interrater/*.py c10/scripts/*.py
 
-      - name: ⑩ 静态检查（未定义名 / 重复定义 / 冗余导入）
+      - name: ⑬ 静态检查（未定义名 / 重复定义 / 冗余导入）
         # 加这一条的理由是具体的一次事故：calibrate_asr.py 用了 os.environ 却没
         # import os，py_compile 通过、CI 全绿，但函数一调就 NameError。
         # 编译级检查抓不到名字解析错误 —— 只有静态分析能。

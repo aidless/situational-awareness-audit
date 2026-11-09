@@ -612,14 +612,16 @@ miss   k &lt; 0.2   或窗口末段 k 转负</code></pre>
 ├── deadlines.py            到期日机械计数
 └── audit.py               校验 / 封存 / 评分</code></pre>
 
-<p style="margin-top:20px;font-size:13px;color:var(--fg2)">四条命令构成完整工作流：</p>
+<p style="margin-top:20px;font-size:13px;color:var(--fg2)">离线路径是 validate、verify、drift、score。score 只打印已经写下的判定，窗口未关的不算终判：</p>
 <pre><code><span style="color:var(--teal)">python audit.py validate</span>   # 结构校验；当前 PASS，24 条全锁 / 0 条待锁定
 <span style="color:var(--teal)">python audit.py brief</span>      # 按到期日与可判定性排序的待办清单
-<span style="color:var(--teal)">python audit.py seal</span>       # 阈值未填齐则拒绝执行 —— 已测试，闸门有效
-<span style="color:var(--teal)">python audit.py score</span>      # 未封存即拒绝评分，输出按类型命中率</code></pre>
+<span style="color:var(--teal)">python audit.py verify</span>     # 哈希与条数；不一致则 FAIL
+<span style="color:var(--teal)">python audit.py seal</span>       # 哈希未变不重写；要改必须带 --reason，否则退出码 1
+<span style="color:var(--teal)">python audit.py drift</span>      # 条数、证据缺失不计 miss、OOM 去重规则
+<span style="color:var(--teal)">python audit.py score</span>      # 未封存即拒绝；有记录则打印，并标明非终判</code></pre>
 
 <div class="note">
-  <strong>当前状态：封存闸门仍生效。</strong><code>validate</code> 输出 PASS，待锁定 0 条；已封存（sha256 ed5dfee3…，C10 折算条款修正后重封）。<code>seal</code> 仍会拒绝执行并返回退出码 1——这是设计意图。阈值必须人工锁定：每条都要写明具体数值、数据源与口径，尤其 C17（是否计入电力基础设施）、C19（厂商不单拆 AI 收入时如何替代）这类口径争议大的条目。
+  <strong>当前状态：封存闸门仍生效。</strong><code>validate</code> 输出 PASS，待锁定 0 条；已封存（sha256 ed5dfee3…，C10 折算条款修正后重封）。断言表未改时再次执行 <code>seal</code> 不会重写 <code>seal.json</code>。改了阈值却不带 <code>--reason</code> 时退出码为 1，旧哈希必须进入 <code>seal_history.jsonl</code>。阈值必须人工锁定：每条都要写明具体数值、数据源与口径，尤其 C17（是否计入电力基础设施）、C19（厂商不单拆 AI 收入时如何替代）这类口径争议大的条目。2026Q4 的 C19 miss 与 C15 partial 仍是窗口内记录，不是终判。
 </div>
 
 <h3 style="font-size:14px;font-weight:500;margin:38px 0 10px;color:var(--fg2)">补充 · C10 实证包：为什么它跑不出判定，以及这本身查出了什么</h3>
