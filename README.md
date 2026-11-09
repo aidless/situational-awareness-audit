@@ -1,24 +1,42 @@
 # Situational Awareness 断言审计
 
-[![audit](https://github.com/aidless/situational-awareness-audit/actions/workflows/audit.yml/badge.svg)](https://github.com/aidless/situational-awareness-audit/actions/workflows/audit.yml)
+## 问题
 
-> **English TL;DR**: A pre-registered audit that decomposes Leopold Aschenbrenner's *Situational Awareness* into 24 falsifiable claims with sealed, sha256-locked thresholds, then scores them mechanically at fixed deadlines — `audit.py verify` blocks any silent post-hoc change. Run `audit.py validate` → `verify` → `score`; 2026Q4 interim scoring already exists (C19 miss, C15 partial). Framed as an audit, not a prediction: a single-person effort promising a reproducible judging record, with the transferable seven-gate protocol isolated in METHOD.md.
+对 Leopold Aschenbrenner《Situational Awareness》里已封存的断言做跨时间审计：阈值事先 sha256 锁定，到期后按协议记分，改阈值必须留痕。
+这不是预测市场，也不对「会不会发生」定价。
+现在还没有终分：多数到期日在未来；2026Q4 里的 C19 miss 与 C15 partial 都是窗口内中间记录，不是终判。
 
-把 Leopold Aschenbrenner《Situational Awareness: The Decade Ahead》（2024-06-06 版，165 页）里的预测主张，拆成 **24 条可证伪的独立断言**，逐条锁定判定阈值，封存后等时间检验。
+## 状态
 
-**验证过什么**：封存已完成（`data/seal.json` 的 `claims_sha256`），`python3 audit.py verify` 会拦住任何事后改阈值；2026Q4 中间评分为 C19 miss、C15 partial，均非终判。
+**STATUS: WORK-IN-PROGRESS** — 还不到 A。下面任何一条还在，就不是终审，也不是 A。
 
-**怎么跑**：`pip install -r requirements.txt`，然后 `python3 audit.py validate`（结构校验）→ `python3 audit.py verify`（封存一致性）→ `python3 audit.py score`（校准报告）。
+- 多数断言的到期日在 2027 及以后。全表没有终分。2026Q4 的两条记录窗口都还开着：C19 miss 到 2026-12-31，C15 partial 到 2027-06-30。
+- 单人审计。`interrater/` 已预注册，没有真人判定者的数据，一致性还没测。
+- C10 要求至少 12 名被试。仪器在，数据不在。这是证据未收集，不是 miss。
+- 可迁移的部分写在 `METHOD.md`（七道闸门）。这不是一个可安装的通用库：没有第二个语料，没有对外 API。
+- C02 的 OOM 加总要等组成断言到期才能算。`drift` 只检查去重规则还在，不算总数。
 
-**这不是一篇预测。这是一次审计。** 区别在于：预测说"我认为会怎样"，审计说"你说了什么、我拿什么核、核不上怎么记"。
+直接推到默认分支、同时改写 `seal_history.jsonl` 使新提交看起来自洽时，每周定时任务对不上推送前的哈希。pull request 与 push 上的 `trail` 才对照基线。见 `FAILURE_MODES.md`。
 
----
+同一段话的英文：
 
-## 它解决什么问题
+An audit of sealed claims over time: thresholds are sha256-locked, then scored on their deadlines.
+This is not a prediction market.
+There is no final score yet; the 2026Q4 C19 miss and C15 partial are interim.
 
-那本书的影响力（尤其在 AI 圈与资本圈）大到需要有人较真，但它的论证方式**没法直接检验**——已发表的数据、作者自己的数量级估计、以及大量直觉被编织在一起，读者很难分清哪些数字有出处、哪些是拍脑袋的、哪些根本不可操作化。
+## 离线复现
 
-这个项目的做法是：把每一句主张转成一条有明确判定带、明确数据源、明确排除规则的断言，然后封存。到期日按规则机械判定，不重新解释。
+不需要原文 PDF。新克隆后只装 `pyyaml`。这条路径应在一刻钟内结束，实际是秒级：
+
+```bash
+pip install -r requirements.txt
+python3 audit.py validate   # 结构；打印断言条数与计分分母
+python3 audit.py verify     # 封存哈希、条数与 seal.json、历史留痕
+python3 audit.py drift      # METHOD、证据缺失不计 miss、OOM 去重规则
+python3 audit.py score      # 有 data/scores/ 就打印，并标明非终判
+```
+
+`validate` / `verify` / `drift` / `score` 都会在 CI 里跑。评分文件不存在时 `score` 退出码为 0，并说明这是「还没判」，不是 0 分。
 
 ## 当前状态
 
@@ -43,7 +61,9 @@
 
 ## 三种失效模式
 
-审计过程中识别出的三类问题，按发现难度递增：
+这三类是书里的数字会怎样出错。审计器自己会怎样把账记错（事后改阈值、把证据缺失记成 miss、OOM 重复计入），见 `FAILURE_MODES.md`。
+
+书里的三类，按发现难度递增：
 
 1. **口径可换** —— 数字取错了，能查出来。
 2. **数字不存在** —— 如「人类思维速率」，从来没人测过，得先造定义再造仪器（这就是 C10）。
@@ -57,6 +77,7 @@ C02 的预算是 `A_phys + A_algo ≈ 4.4 OOM`，已落在作者 3–6 的区间
 
 ```
 ├── METHOD.md              可迁移的七道闸门（本项目的通用部分）
+├── FAILURE_MODES.md       审计器自身怎样把账记错（改阈值、证据缺失、OOM 重复计入）
 ├── EVIDENCE_2027.md       2027-12-31 到期的 12 条证据收集预案（源预登记 + 快照纪律）
 ├── PROVENANCE.md          原文出处 · sha256 · 复现方式（原文不随仓库分发）
 ├── LICENSE                代码 MIT
@@ -79,10 +100,13 @@ C02 的预算是 `A_phys + A_algo ≈ 4.4 OOM`，已落在作者 3–6 的区间
 ## 使用
 
 ```bash
-python audit.py validate     # 结构校验
+# 离线路径见上文。下面是同一套命令，外加封存与台历。
+python audit.py validate
+python audit.py verify
+python audit.py drift
+python audit.py score        # 有评分文件才有逐条输出；窗口未关的标为非终判
 python audit.py brief        # 待锁定阈值清单（当前应为 0 条）
-python audit.py verify       # 封存一致性
-python audit.py score        # 输出校准报告
+python audit.py seal --reason "改了什么、为什么"   # 仅在断言表已改、且 verify 为 FAIL 时
 
 python deadlines.py --write   # 重新生成判定台历（CI 会比对，防手抄漂移）
 
@@ -92,24 +116,31 @@ python interrater/kappa.py ratings_A.csv --map <包>/_map.json     # 算一致�
 python interrater/selftest_pipeline.py                            # 判别力自测
 ```
 
-依赖：`pyyaml`（`requirements.txt`）。C10 实证包的完整功能另需 `tiktoken`、`faster-whisper`、`piper-tts`，见 `c10/requirements.txt` —— 这些不进 CI，因为九条检查都不需要它们。
+依赖：`pyyaml`（`requirements.txt`）。C10 实证包的完整功能另需 `tiktoken`、`faster-whisper`、`piper-tts`，见 `c10/requirements.txt`。那些不进离线审计路径，也不进 CI 的判定检查。
 
 ## CI
 
-每条涉及 `data/`、`deadlines.py`、`interrater/` 的推送与 PR 都会跑 `.github/workflows/audit.yml`，另外每周一 09:00 UTC 主动巡检一次。十条检查：
+[![audit](https://github.com/aidless/situational-awareness-audit/actions/workflows/audit.yml/badge.svg)](https://github.com/aidless/situational-awareness-audit/actions/workflows/audit.yml)
 
-1. **结构校验** —— 24 条断言字段齐全、阈值格式合法
-2. **封存一致性** —— `claims.yaml` 的 sha256 是否仍等于 `seal.json` 里记的值。**这是 CI 的核心**：它变红意味着有人在封存后改了断言表，而按纪律这必须走「明示修正 + 归档 + 重封存」，不能是悄悄改完直接推
-3. **C10 判定器自测** —— 判定带边界、唯一分母口径、synthetic 硬闸门
-4. **台历漂移** —— 重新生成 `data/schedule.md` 并比对。到期条数是可机械导出的量，**手抄必漂移**：本项目曾把「2027 全年 13 条」误挂到「2027-12-31 当天」上（当天实为 12 条，C15 在 06-30）。改由 `deadlines.py` 生成并由 CI 比对后才不会重复发生
-5. **预注册完整性** —— `interrater/PREREG.md` 的 sha256 是否仍等于 `PREREG.sha256`。与第 2 条同理：分析计划也不能在看到数据之后改
-6. **一致性统计自测** —— kappa 的解析解校验（含线性加权、单类别退化、独立随机应趋近 0）
-7. **判定包生成** —— 按固定 seed 出包，验证盲化与泄漏扫描仍有效
-8. **判别力自测** —— 用合成判定者验证流程能显示出预注册预期的分化（若连已知强弱的分化都显示不出，真实数据也无法解读）
-9. **语法检查** —— 全部脚本可编译
-10. **静态检查** —— `ruff` 查未定义名 / 重复定义 / 冗余导入。加这条的直接动因是一次真实事故：`calibrate_asr.py` 用了 `os.environ` 却没 `import os`，`py_compile` 通过、CI 全绿，函数一调就 `NameError`。**编译级检查抓不到名字解析错误**，只有静态分析能
+徽章只表示 `audit.yml` 有没有变红，不是审计分数，也不是终判。
 
-前九条都不需要原文 PDF（本仓库不含原文），除 pyyaml 外零依赖；第十条只多装一个 ruff。这是刻意的：**一个需要原文才能变绿的 CI 是没用的 CI。**
+涉及 `data/`、`audit.py`、`README.md`、`METHOD.md`、`FAILURE_MODES.md`、`deadlines.py`、`interrater/` 的推送与 PR 会跑 `.github/workflows/audit.yml`，另外每周一 09:00 UTC 巡检一次。清单与脚本一致：
+
+1. **结构校验** —— `audit.py validate`。字段齐全，并打印条数与计分分母
+2. **封存一致性** —— `audit.py verify`。sha256 与 `claim_count` 必须等于 `seal.json`。变红意味着有人在封存后改了断言表，必须走「明示修正 + 归档 + `seal --reason`」
+3. **漂移** —— `audit.py drift`。条数对不上封存或 `METHOD.md` 的分母、证据缺失被记成 miss、OOM 去重规则被拿掉，都会变红
+4. **评分打印** —— `audit.py score`。有 `data/scores/` 就逐条打印，窗口未关的标为非终判。没有终分
+5. **留痕** —— `audit.py trail`。只在 pull request 和 push 上对照基线。哈希变了而历史里没有旧哈希，或已写下的判定被删掉、改判却没有 `revision_note`，就变红。每周定时任务没有基线，不做这一条
+6. **C10 判定器自测** —— 判定带边界、唯一分母口径、synthetic 硬闸门
+7. **台历漂移** —— 重新生成 `data/schedule.md` 并比对。到期条数是可机械导出的量，**手抄必漂移**：本项目曾把「2027 全年 13 条」误挂到「2027-12-31 当天」上（当天实为 12 条，C15 在 06-30）。改由 `deadlines.py` 生成并由 CI 比对后才不会重复发生
+8. **预注册完整性** —— `interrater/PREREG.md` 的 sha256 是否仍等于 `PREREG.sha256`。与第 2 条同理：分析计划也不能在看到数据之后改
+9. **一致性统计自测** —— kappa 的解析解校验（含线性加权、单类别退化、独立随机应趋近 0）
+10. **判定包生成** —— 按固定 seed 出包，验证盲化与泄漏扫描仍有效
+11. **判别力自测** —— 用合成判定者验证流程能显示出预注册预期的分化（若连已知强弱的分化都显示不出，真实数据也无法解读）
+12. **语法检查** —— 全部脚本可编译
+13. **静态检查** —— `ruff` 查未定义名 / 重复定义 / 冗余导入。加这条的直接动因是一次真实事故：`calibrate_asr.py` 用了 `os.environ` 却没 `import os`，`py_compile` 通过、CI 全绿，函数一调就 `NameError`。**编译级检查抓不到名字解析错误**，只有静态分析能
+
+除 ruff 之外都不需要原文 PDF（本仓库不含原文），运行时依赖只有 pyyaml。这是刻意的：**一个需要原文才能变绿的 CI 是没用的 CI。**
 
 依赖分两个文件：`requirements.txt` 只放 CI 真正用到的 `pyyaml`，`c10/requirements.txt` 放 C10 全功能所需的 `tiktoken` / `faster-whisper` / `piper-tts`。分开是为了让 CI 保持轻量。
 
