@@ -6,4 +6,4 @@
 # C10 实证包的完整功能（token 折算系数实测、ASR 转写校准）另需
 # tiktoken 与 faster-whisper，见 c10/requirements.txt —— 那些不进 CI，
 # 因为 CI 的四条检查都不需要它们。
-pyyaml>=6.0
+pyyaml>=6.0.3
