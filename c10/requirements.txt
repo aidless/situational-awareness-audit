@@ -9,4 +9,4 @@
 
 tiktoken>=0.7        # o200k_base 折算系数实测(token_coef.py / probe.py)
 faster-whisper>=1.0  # ASR 转写校准(calibrate_asr.py)，仅校准用，采集不依赖
-piper-tts>=1.0       # 合成校准音频用；无它也可用任何 TTS 或真人朗读
+piper-tts>=1.8.0       # 合成校准音频用；无它也可用任何 TTS 或真人朗读
