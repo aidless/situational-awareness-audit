@@ -8,5 +8,5 @@
 # 否则 xet 的 CAS 会报 401。
 
 tiktoken>=0.7        # o200k_base 折算系数实测(token_coef.py / probe.py)
-faster-whisper>=1.0  # ASR 转写校准(calibrate_asr.py)，仅校准用，采集不依赖
+faster-whisper>=1.2.1  # ASR 转写校准(calibrate_asr.py)，仅校准用，采集不依赖
 piper-tts>=1.0       # 合成校准音频用；无它也可用任何 TTS 或真人朗读
