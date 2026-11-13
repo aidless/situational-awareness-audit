@@ -2,7 +2,13 @@
 
 [![audit](https://github.com/aidless/situational-awareness-audit/actions/workflows/audit.yml/badge.svg)](https://github.com/aidless/situational-awareness-audit/actions/workflows/audit.yml)
 
+> **English TL;DR**: A pre-registered audit that decomposes Leopold Aschenbrenner's *Situational Awareness* into 24 falsifiable claims with sealed, sha256-locked thresholds, then scores them mechanically at fixed deadlines — `audit.py verify` blocks any silent post-hoc change. Run `audit.py validate` → `verify` → `score`; 2026Q4 interim scoring already exists (C19 miss, C15 partial). Framed as an audit, not a prediction: a single-person effort promising a reproducible judging record, with the transferable seven-gate protocol isolated in METHOD.md.
+
 把 Leopold Aschenbrenner《Situational Awareness: The Decade Ahead》（2024-06-06 版，165 页）里的预测主张，拆成 **24 条可证伪的独立断言**，逐条锁定判定阈值，封存后等时间检验。
+
+**验证过什么**：封存已完成（`data/seal.json` 的 `claims_sha256`），`python3 audit.py verify` 会拦住任何事后改阈值；2026Q4 中间评分为 C19 miss、C15 partial，均非终判。
+
+**怎么跑**：`pip install -r requirements.txt`，然后 `python3 audit.py validate`（结构校验）→ `python3 audit.py verify`（封存一致性）→ `python3 audit.py score`（校准报告）。
 
 **这不是一篇预测。这是一次审计。** 区别在于：预测说"我认为会怎样"，审计说"你说了什么、我拿什么核、核不上怎么记"。
 
