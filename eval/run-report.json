@@ -1,0 +1,129 @@
+{
+ "total": 20,
+ "passed": 20,
+ "failed": 0,
+ "selftest": false,
+ "failed_by_axis": {},
+ "results": [
+  {
+   "id": "SA-01",
+   "axis": "claims/schema",
+   "ok": true,
+   "detail": "24"
+  },
+  {
+   "id": "SA-02",
+   "axis": "claims/schema",
+   "ok": true,
+   "detail": "True"
+  },
+  {
+   "id": "SA-03",
+   "axis": "claims/exclusion",
+   "ok": true,
+   "detail": "['C24']"
+  },
+  {
+   "id": "SA-04",
+   "axis": "claims/exclusion",
+   "ok": true,
+   "detail": "23"
+  },
+  {
+   "id": "SA-05",
+   "axis": "deadlines/table",
+   "ok": true,
+   "detail": "12"
+  },
+  {
+   "id": "SA-06",
+   "axis": "deadlines/table",
+   "ok": true,
+   "detail": "6"
+  },
+  {
+   "id": "SA-07",
+   "axis": "deadlines/render",
+   "ok": true,
+   "detail": "计分断言 23 条 · 排除 1 条 · 表内合计 24 条"
+  },
+  {
+   "id": "SA-08",
+   "axis": "audit/seal",
+   "ok": true,
+   "detail": "True"
+  },
+  {
+   "id": "SA-09",
+   "axis": "audit/seal",
+   "ok": true,
+   "detail": "0"
+  },
+  {
+   "id": "SA-10",
+   "axis": "audit/seal",
+   "ok": true,
+   "detail": "None"
+  },
+  {
+   "id": "SA-11",
+   "axis": "audit/validate",
+   "ok": true,
+   "detail": "0"
+  },
+  {
+   "id": "SA-12",
+   "axis": "audit/validate",
+   "ok": true,
+   "detail": "True"
+  },
+  {
+   "id": "SA-13",
+   "axis": "audit/score",
+   "ok": true,
+   "detail": "0"
+  },
+  {
+   "id": "SA-14",
+   "axis": "audit/score",
+   "ok": true,
+   "detail": "True"
+  },
+  {
+   "id": "SA-15",
+   "axis": "scores/tally",
+   "ok": true,
+   "detail": "0.5"
+  },
+  {
+   "id": "SA-16",
+   "axis": "scores/tally",
+   "ok": true,
+   "detail": "0"
+  },
+  {
+   "id": "SA-17",
+   "axis": "kappa/stats",
+   "ok": true,
+   "detail": "1.0"
+  },
+  {
+   "id": "SA-18",
+   "axis": "kappa/stats",
+   "ok": true,
+   "detail": "moderate"
+  },
+  {
+   "id": "SA-19",
+   "axis": "interrater/packet",
+   "ok": true,
+   "detail": "12"
+  },
+  {
+   "id": "SA-20",
+   "axis": "audit/raises",
+   "ok": true,
+   "detail": "raised FileNotFoundError"
+  }
+ ]
+}

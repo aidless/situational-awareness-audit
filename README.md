@@ -181,3 +181,40 @@ ruff check --select F821,F811,F401 audit.py deadlines.py interrater/ c10/scripts
 ## 许可
 
 代码 MIT（`LICENSE`）；文档与数据 CC BY 4.0（`LICENSE-DOCS.md`）。原文不在此仓库内，其版权归原作者；`claims.yaml` 中的简短摘录仅用于定位与核对，同样不受本仓库许可约束。
+
+## 验收标准与复算
+
+本仓判为合格的条件是 `python3 eval/run_cases.py` 通过率必须为 100%（20/20），且 `make eval` 退出码必须为 0；任何一条失败即判为不合格。题库本身必须能被反证：`python3 eval/run_cases.py --selftest` 必须变红（19/20，退出码仍为 0），全绿则说明这套题是装饰。
+
+| axis | 条数 | 判什么 |
+|---|---|---|
+| `claims/schema` | 2 | 断言条数（24）与 `audit.REQUIRED` 12 字段是否齐全 |
+| `claims/exclusion` | 2 | 排除集合（C24）与计分分母（23） |
+| `deadlines/table` | 2 | 2027-12-31 集中到期 12 条、到期日去重后 6 个 |
+| `deadlines/render` | 1 | 台历首行统计句逐字一致 |
+| `audit/seal` | 3 | `claims_sha256` 一致、`verify` 退出码 0、无原文时 PDF 摘要为 `None` |
+| `audit/validate` | 2 | `validate` 退出码 0、`in_range` 区间正则的接受与拒绝 |
+| `audit/score` | 2 | `score` 退出码 0、报告里「计分条数: 2」 |
+| `scores/tally` | 2 | 2026Q4 的 C15 `partial_credit=0.5`、hit 计数 0 |
+| `kappa/stats` | 2 | 完全一致时 kappa=1.0、0.6 落在 moderate 档 |
+| `interrater/packet` | 1 | 分层抽样 seed=7 抽 12 条的实际条数 |
+| `audit/raises` | 1 | 缺文件时 `load_yaml` 抛 `FileNotFoundError` |
+
+三条命令（在仓库根执行）：
+
+```bash
+python3 eval/run_cases.py                 # 20/20
+python3 eval/run_cases.py --selftest      # 19/20，证明题库会红
+make eval                                 # run_cases + interrater/kappa.py --selftest，rc=0
+```
+
+**复算。** 每题的 `verify` 就是复算代码：`expr` 直接 import 本仓模块（`audit`、`deadlines`、`interrater.kappa`、`interrater.packet_gen`）真调 API，期望值是当前数据下实跑出来的数；`raises` 断言异常类型。`python3 eval/run_cases.py --save` 会把逐题结果写成 `eval/run-report.json`（`total/passed/failed/failed_by_axis/results`），该文件可随时由上述命令重建，不是手写产物。
+
+**失败归因。** 脚本按 `axis` 聚合失败项，输出形如：
+
+```
+失败归因（按 axis）：
+  claims/schema: 1 条 —— SA-01
+```
+
+即先看是哪一类（数据/封存/校验/评分/一致性/抽样），再看具体 case id；`--json` 可拿到同样的 `failed_by_axis` 结构，便于接 CI 注释。
